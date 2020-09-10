@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-
+@FragmentScoped
 class BusViewModel @Inject constructor(private val repository: BusRepository): ViewModel() {
 
 
