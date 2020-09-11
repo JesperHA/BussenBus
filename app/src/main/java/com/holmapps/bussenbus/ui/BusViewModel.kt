@@ -1,5 +1,6 @@
 package com.holmapps.bussenbus.ui
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.holmapps.bussenbus.repository.BusRepository
@@ -12,6 +13,7 @@ import javax.inject.Inject
 @FragmentScoped
 class BusViewModel @Inject constructor(private val repository: BusRepository): ViewModel() {
 
+    val busses = repository.getBusses()
 
     init {
         fetchBusLocations()
@@ -24,4 +26,5 @@ class BusViewModel @Inject constructor(private val repository: BusRepository): V
             Timber.i("Locations Fetched")
         }
     }
+
 }

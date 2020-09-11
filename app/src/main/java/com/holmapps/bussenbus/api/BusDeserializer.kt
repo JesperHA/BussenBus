@@ -30,7 +30,6 @@ class BusDeserializer() : JsonDeserializer<BusResponse> {
             }
         }
 
-
         return response
     }
 
@@ -39,7 +38,7 @@ class BusDeserializer() : JsonDeserializer<BusResponse> {
         for (i in 0..jsonArray.size()-1) {
             val item = jsonArray[i].asJsonArray
             if (item.size() > 11 && item[0].isJsonPrimitive && item[1].isJsonPrimitive && item[2].isJsonPrimitive) {
-                val title = item[0].asString.replace("Bus    ", "")
+                val title = item[0].asString.replace("Bus    ", "").trim()
                 val longtitude = item[1].asDouble / 1000000
                 val latitude = item[2].asDouble / 1000000
                 val nextStop = item[11].asString.replace(" (Bornholm)", "")
