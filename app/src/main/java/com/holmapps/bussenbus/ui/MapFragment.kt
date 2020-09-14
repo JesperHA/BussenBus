@@ -59,10 +59,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewModel.fetchBusLocations()
 }
 
-//        val fragmentManager = getActivity()?.supportFragmentManager
-//            ?.findFragmentById(R.id.map) as? SupportMapFragment
-//        fragmentManager?.getMapAsync(this)
-
     }
 
     private fun busMarkers(busList: List<Bus>){
@@ -79,15 +75,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun getMarkerIcon(bus: Bus): BitmapDescriptor? {
         val markerView = CustomMarkerView(requireContext(), bus)
-//        markerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-//        markerView.layout(0, 0, markerView.measuredWidth, markerView.measuredHeight)
-//        markerView.isDrawingCacheEnabled = true
-//        markerView.invalidate()
-//        markerView.buildDrawingCache(false)
-        return BitmapDescriptorFactory.fromBitmap(getBitmapFroemview(markerView))
+        return BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerView))
     }
 
-    private fun getBitmapFroemview(view: View): Bitmap? {
+    private fun getBitmapFromView(view: View): Bitmap? {
 
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
@@ -109,13 +100,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             title.text = bus.title
             image.setImageResource(bus.icon)
             delay.text = bus.delayInMins
-
         }
-
     }
-
-
-
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?){
@@ -142,21 +128,4 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             busMarkers(it)
         })
     }
-
-//    override fun onActivityCreated(p0: Bundle?) {
-//        super.onActivityCreated(p0)
-//
-//        getMapAsync(this)
-//    }
-
-
-
-//    override fun onMapReady(googleMap: GoogleMap) {
-//
-//        mMap = googleMap
-//        val bornholm = LatLng(55.125436, 14.919486)
-//        val zoom = 9.9F
-//        mMap.addMarker(MarkerOptions().position(bornholm).title("Marker on Bornholm"))
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bornholm, zoom))
-//    }
 }

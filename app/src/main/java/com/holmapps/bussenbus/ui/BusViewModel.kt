@@ -28,7 +28,7 @@ class BusViewModel @Inject constructor(private val repository: BusRepository): V
 
     private fun loop(){
         viewModelScope.launch(Dispatchers.IO){
-            delay(1000)
+            delay(5000)
             fetchBusLocations()
             loop()
         }
