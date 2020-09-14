@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -100,6 +101,28 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             title.text = bus.title
             image.setImageResource(bus.icon)
             delay.text = bus.delayInMins
+
+            when(bus.title){
+                "1" -> image.setColorFilter(resources.getColor(R.color.Bus1and4))
+                "2" -> image.setColorFilter(resources.getColor(R.color.Bus2))
+                "3" -> image.setColorFilter(resources.getColor(R.color.Bus3and5))
+                "4" -> image.setColorFilter(resources.getColor(R.color.Bus1and4))
+                "5" -> image.setColorFilter(resources.getColor(R.color.Bus3and5))
+                "6" -> image.setColorFilter(resources.getColor(R.color.Bus6))
+                "7" -> image.setColorFilter(resources.getColor(R.color.Bus7and8))
+                "8" -> image.setColorFilter(resources.getColor(R.color.Bus7and8))
+                "9" -> image.setColorFilter(resources.getColor(R.color.Bus9))
+                "10" -> image.setColorFilter(resources.getColor(R.color.Bus10))
+                "Færge" -> image.setColorFilter(resources.getColor(R.color.Boat))
+            }
+
+            if(bus.delayInMins == "0" || TextUtils.isEmpty(bus.delayInMins)){
+                delay.visibility = GONE
+            } else {
+                delay.visibility = View.VISIBLE
+                delay.text = bus.delayInMins
+            }
+
         }
     }
 
