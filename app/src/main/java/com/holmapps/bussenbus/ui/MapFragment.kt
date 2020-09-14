@@ -1,10 +1,13 @@
 package com.holmapps.bussenbus.ui
 
+import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -14,8 +17,8 @@ import com.holmapps.bussenbus.api.Bus
 import com.holmapps.bussenbus.databinding.MapFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.map_fragment.*
-import timber.log.Timber
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -43,11 +46,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val binding = MapFragmentBinding.bind(view)
 
+
         binding.floatingActionButton.setOnClickListener {
             viewModel.fetchBusLocations()
-            val busList = viewModel.busses
-            busMarkers(busList)
-            Timber.i(busList.toString())
 }
 
 //        val fragmentManager = getActivity()?.supportFragmentManager
@@ -60,7 +61,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mMap.clear()
         busList.forEach { bus ->
             val busPos = LatLng(bus.latitude, bus.longtitude)
-            mMap.addMarker(MarkerOptions().position(busPos).title("Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude))
+            mMap.addMarker(
+                MarkerOptions().position(busPos)
+                    .title("Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude)
+            )
         }
 
     }
@@ -84,6 +88,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val zoom = 9.9F
         //mMap.addMarker(MarkerOptions().position(bornholm).title("Marker on Bornholm"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bornholm, zoom))
+
+        viewModel.liveBus.observe(viewLifecycleOwner, Observer {
+            busMarkers(it)
+        })
     }
 
 //    override fun onActivityCreated(p0: Bundle?) {

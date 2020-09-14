@@ -17,7 +17,7 @@ class BusRepository @Inject constructor(
     val api: BusApi,
     @Named("timeFormatter") private val timeFormatter: SimpleDateFormat
 ) {
-    private var allBusses = mutableListOf<Bus>()
+    private var allBusses =  MutableLiveData<List<Bus>>()
 
     suspend fun fetchBusLocations(): ApiResponse<BusResponse> {
         return try {
@@ -35,8 +35,7 @@ class BusRepository @Inject constructor(
     }
 
     private fun saveBusses(busList: List<Bus>){
-        allBusses.clear()
-        allBusses.addAll(busList)
+        allBusses.postValue(busList)
     }
 
     fun getBusses() = allBusses
