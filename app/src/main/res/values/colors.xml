@@ -3,4 +3,12 @@
     <color name="colorPrimary">#2B9348</color>
     <color name="colorPrimaryDark">#007F5F</color>
     <color name="colorAccent">#55A630</color>
+    <color name="Bus1and4">#e7b72b</color>
+    <color name="Bus2">#000000</color>
+    <color name="Bus3and5">#bf011f</color>
+    <color name="Bus6">#4f8a3f</color>
+    <color name="Bus7and8">#703983</color>
+    <color name="Bus9">#7cb3d7</color>
+    <color name="Bus10">#9e7f1e</color>
+    <color name="Boat">#FFFFFF</color>
 </resources>

@@ -10,26 +10,38 @@
 
     <ImageView
         android:id="@+id/bus_circle"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
+        android:src="@drawable/ic_circle_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/bus_circle_inner"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_circle_24"
+        app:layout_constraintBottom_toBottomOf="@+id/bus_circle"
+        app:layout_constraintEnd_toEndOf="@+id/bus_circle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/ic_circle_24" />
+        app:tint="#FFFFFF" />
 
     <TextView
         android:id="@+id/bus_title"
         android:layout_width="18dp"
         android:layout_height="29dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="#000000"
-        android:textSize="24sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/bus_circle"
         app:layout_constraintEnd_toEndOf="@+id/bus_circle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/bus_circle"
-        tools:text="5" />
+        tools:text="10" />
 
     <TextView
         android:id="@+id/bus_delay"
