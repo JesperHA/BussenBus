@@ -7,6 +7,7 @@ import com.holmapps.bussenbus.api.Bus
 import com.holmapps.bussenbus.repository.BusRepository
 import dagger.hilt.android.scopes.FragmentScoped
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -19,7 +20,18 @@ class BusViewModel @Inject constructor(private val repository: BusRepository): V
     init {
         liveBus = repository.getBusses()
 
+//        loop()
+
         fetchBusLocations()
+    }
+
+
+    private fun loop(){
+        viewModelScope.launch(Dispatchers.IO){
+            delay(1000)
+            fetchBusLocations()
+            loop()
+        }
     }
 
     fun fetchBusLocations() {

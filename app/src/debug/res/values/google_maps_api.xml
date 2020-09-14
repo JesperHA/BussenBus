@@ -20,7 +20,7 @@
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
     JESPER: AIzaSyA-L7CzTWZ4Ams-5Kwip6_LR19-pjhQrvM
-    ULRIK:
+    ULRIK: AIzaSyBNJ51Mhop2qT07wLn34CUZWETY_Qic66k
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBNJ51Mhop2qT07wLn34CUZWETY_Qic66k</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyA-L7CzTWZ4Ams-5Kwip6_LR19-pjhQrvM</string>
 </resources>

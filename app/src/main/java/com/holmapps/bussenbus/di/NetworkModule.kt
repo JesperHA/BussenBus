@@ -39,7 +39,7 @@ object BusModule {
         builder.connectTimeout(15, TimeUnit.SECONDS)
         builder.readTimeout(15, TimeUnit.SECONDS)
         builder.writeTimeout(15, TimeUnit.SECONDS)
-        builder.retryOnConnectionFailure(false)
+        builder.retryOnConnectionFailure(true)
         if (BuildConfig.DEBUG) {
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.HEADERS

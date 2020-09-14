@@ -46,7 +46,7 @@ class BusDeserializer() : JsonDeserializer<BusResponse> {
                 if (title.startsWith("Færge")) {
                     icon = R.drawable.ic_baseline_directions_boat_24
                 } else {
-                    icon = R.drawable.ic_baseline_directions_bus_24
+                    icon = R.drawable.ic_circle_24
                 }
                 val delayInMins = item[6].asString
 

@@ -2,10 +2,7 @@ package com.holmapps.bussenbus.repository
 
 import androidx.lifecycle.MutableLiveData
 import com.holmapps.bussenbus.api.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okio.IOException
-import retrofit2.Response
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,6 +15,8 @@ class BusRepository @Inject constructor(
     @Named("timeFormatter") private val timeFormatter: SimpleDateFormat
 ) {
     private var allBusses =  MutableLiveData<List<Bus>>()
+
+
 
     suspend fun fetchBusLocations(): ApiResponse<BusResponse> {
         return try {

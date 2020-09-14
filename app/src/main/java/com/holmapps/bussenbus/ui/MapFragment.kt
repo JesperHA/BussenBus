@@ -1,18 +1,25 @@
 package com.holmapps.bussenbus.ui
 
-import android.R
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.holmapps.bussenbus.R
 import com.holmapps.bussenbus.api.Bus
 import com.holmapps.bussenbus.databinding.MapFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +45,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         return MapFragmentBinding.inflate(inflater).root
     }
 
@@ -63,11 +71,52 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val busPos = LatLng(bus.latitude, bus.longtitude)
             mMap.addMarker(
                 MarkerOptions().position(busPos)
-                    .title("Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude)
+                    .title("Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude).icon(getMarkerIcon(bus)).anchor(0.5F, 0.5F)
             )
         }
 
     }
+
+    private fun getMarkerIcon(bus: Bus): BitmapDescriptor? {
+        val markerView = CustomMarkerView(requireContext(), bus)
+//        markerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+//        markerView.layout(0, 0, markerView.measuredWidth, markerView.measuredHeight)
+//        markerView.isDrawingCacheEnabled = true
+//        markerView.invalidate()
+//        markerView.buildDrawingCache(false)
+        return BitmapDescriptorFactory.fromBitmap(getBitmapFroemview(markerView))
+    }
+
+    private fun getBitmapFroemview(view: View): Bitmap? {
+
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+        var bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
+        var canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
+    }
+
+    class CustomMarkerView(context: Context, bus: Bus): ConstraintLayout(context){
+
+        init {
+            LayoutInflater.from(context).inflate(R.layout.custom_bus_marker, this, true)
+
+            val image = findViewById<ImageView>(R.id.bus_circle)
+            val title = findViewById<TextView>(R.id.bus_title)
+            val delay = findViewById<TextView>(R.id.bus_delay)
+
+            title.text = bus.title
+            image.setImageResource(bus.icon)
+            delay.text = bus.delayInMins
+
+        }
+
+    }
+
+
+
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?){
         super.onActivityCreated(savedInstanceState)
