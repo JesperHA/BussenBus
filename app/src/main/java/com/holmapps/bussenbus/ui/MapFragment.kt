@@ -19,7 +19,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.holmapps.bussenbus.R
 import com.holmapps.bussenbus.api.Bus
-import com.holmapps.bussenbus.api.Coordinate
 import com.holmapps.bussenbus.databinding.MapFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.map_fragment.*
@@ -73,18 +72,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    private fun routeCoordinates(coordinateList: List<Coordinate>) {
-
-        val points = mutableListOf<LatLng>()
-
-        coordinateList.forEach { coordinate ->
-            points.add(LatLng(coordinate.latitude, coordinate.longtitude))
-        }
-
+    private fun routeCoordinates(coordinateList: List<LatLng>) {
         mMap.addPolyline(
-            PolylineOptions().add(points)
+            PolylineOptions().addAll(coordinateList)
         )
-
     }
 
     private fun getMarkerIcon(bus: Bus): BitmapDescriptor? {

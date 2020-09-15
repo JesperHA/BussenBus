@@ -1,5 +1,6 @@
 package com.holmapps.bussenbus.api
 
+import com.google.android.gms.maps.model.LatLng
 import com.google.gson.JsonArray
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -13,7 +14,7 @@ class RouteDeserializer() : JsonDeserializer<RouteResponse> {
         typeOfT: Type?,
         context: JsonDeserializationContext?
     ): RouteResponse {
-        val coordList: MutableList<Coordinate> = mutableListOf()
+        val coordList: MutableList<LatLng> = mutableListOf()
         val stopList: MutableList<BusStop> = mutableListOf()
         val response: RouteResponse = RouteResponse(coordList, stopList)
 
@@ -30,14 +31,14 @@ class RouteDeserializer() : JsonDeserializer<RouteResponse> {
         return response
     }
 
-    private fun addItems(jsonArray: JsonArray, coordList: MutableList<Coordinate>, stopList: MutableList<BusStop>) {
+    private fun addItems(jsonArray: JsonArray, coordList: MutableList<LatLng>, stopList: MutableList<BusStop>) {
         val coordJson = jsonArray[0].asJsonArray
         val stopJson = jsonArray[1].asJsonArray
         for (i in 0..coordJson.size()-1){
             val item = coordJson[i].asJsonArray
             val longtitude = item[0].asDouble / 1000000
             val latitude = item[1].asDouble / 1000000
-            coordList.add(Coordinate(longtitude,latitude))
+            coordList.add(LatLng(latitude, longtitude))
         }
 
         for (i in 0..stopJson.size()-1){

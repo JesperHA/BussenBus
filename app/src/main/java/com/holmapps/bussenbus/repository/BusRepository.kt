@@ -1,6 +1,7 @@
 package com.holmapps.bussenbus.repository
 
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.maps.model.LatLng
 import com.holmapps.bussenbus.api.*
 import okio.IOException
 import timber.log.Timber
@@ -15,7 +16,7 @@ class BusRepository @Inject constructor(
     @Named("timeFormatter") private val timeFormatter: SimpleDateFormat
 ) {
     private var allBusses =  MutableLiveData<List<Bus>>()
-    private var busRoute = MutableLiveData<List<Coordinate>>()
+    private var busRoute = MutableLiveData<List<LatLng>>()
 
 
 
@@ -52,7 +53,7 @@ class BusRepository @Inject constructor(
         }
     }
 
-    private fun saveCoordinate(route: List<Coordinate>){
+    private fun saveCoordinate(route: List<LatLng>){
         busRoute.postValue(route)
     }
 

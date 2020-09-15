@@ -1,5 +1,7 @@
 package com.holmapps.bussenbus.api
 
+import com.google.android.gms.maps.model.LatLng
+
 data class Bus (
     val title: String,
     val longtitude: Double,
@@ -16,6 +18,6 @@ data class Coordinate (
 )
 
 data class BusStop (
-    val coordinate: Coordinate,
+    val coordinate: LatLng,
     val title:String
 )
