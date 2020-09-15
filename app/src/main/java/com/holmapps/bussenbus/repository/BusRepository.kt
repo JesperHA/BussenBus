@@ -16,7 +16,8 @@ class BusRepository @Inject constructor(
     @Named("timeFormatter") private val timeFormatter: SimpleDateFormat
 ) {
     private var allBusses =  MutableLiveData<List<Bus>>()
-    private var busRoute = MutableLiveData<List<LatLng>>()
+//    private var busRoute = MutableLiveData<List<LatLng>>()
+    private var busRoute = MutableLiveData<RouteObject>()
 
 
 
@@ -42,7 +43,7 @@ class BusRepository @Inject constructor(
                 ApiResponse.create(api.getBusRoute(id))
             if (apiResponse is ApiSuccess){
 
-                saveCoordinate(apiResponse.body.routeList)
+                saveCoordinate(apiResponse.body.routeList, id)
             }
             Timber.i(apiResponse.toString())
             apiResponse
@@ -53,8 +54,8 @@ class BusRepository @Inject constructor(
         }
     }
 
-    private fun saveCoordinate(route: List<LatLng>){
-        busRoute.postValue(route)
+    private fun saveCoordinate(route: List<LatLng>, id: String){
+        busRoute.postValue(RouteObject(id, route))
     }
 
     fun getCoordinates() = busRoute
@@ -70,3 +71,5 @@ class BusRepository @Inject constructor(
     }
 
 }
+
+data class RouteObject(val id: String, val list: List<LatLng>)

@@ -1,6 +1,8 @@
 package com.holmapps.bussenbus.ui
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
@@ -11,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -22,12 +25,15 @@ import com.holmapps.bussenbus.api.Bus
 import com.holmapps.bussenbus.databinding.MapFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.map_fragment.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MapFragment : Fragment(), OnMapReadyCallback {
 
+
+    private val REQUEST_LOCATION: Int = 1
     private lateinit var mMap: GoogleMap
 
     companion object {
@@ -59,23 +65,51 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    private fun busMarkers(busList: List<Bus>) {
-        mMap.clear()
-        busList.forEach { bus ->
-            val busPos = LatLng(bus.latitude, bus.longtitude)
-            mMap.addMarker(
-                MarkerOptions().position(busPos)
-                    .title(bus.id + " - Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude)
-                    .icon(getMarkerIcon(bus)).anchor(0.5F, 0.5F)
-            )
-        }
+    val allMarkers = mutableListOf<Marker>()
 
+
+    private fun plotBusMarkers(busList: List<Bus>) {
+
+        allMarkers.forEach { marker ->
+            marker.remove()
+
+        }
+        allMarkers.clear()
+
+        busList.forEach { bus ->
+
+            val markerOptions = MarkerOptions()
+
+            markerOptions.position(LatLng(bus.latitude, bus.longtitude))
+                .title(bus.title)
+                .icon(getMarkerIcon(bus)).anchor(0.5F, 0.5F)
+
+            val marker: Marker = mMap.addMarker(markerOptions)
+
+            marker.tag = bus.id
+
+
+
+            allMarkers.add(marker)
+        }
+        Timber.i("Markers: " + allMarkers.toString())
     }
 
-    private fun routeCoordinates(coordinateList: List<LatLng>) {
-        mMap.addPolyline(
-            PolylineOptions().addAll(coordinateList)
+    lateinit var polyLine: Polyline
+
+    private fun routeCoordinates(id: String, coordinateList: List<LatLng>) {
+
+        if(flag == true) {
+            polyLine.remove()
+        }
+            polyLine = mMap.addPolyline(
+            PolylineOptions().addAll(coordinateList).color(busColor)
+
         )
+
+        flag = true
+
+        Timber.i("PolyLines: " + polyLine.toString())
     }
 
     private fun getMarkerIcon(bus: Bus): BitmapDescriptor? {
@@ -92,6 +126,85 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         var canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
+    }
+
+
+
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        map_view.onCreate(savedInstanceState)
+        map_view.onResume()
+
+        map_view.getMapAsync(this)
+
+    }
+
+    //Based on this video: https://www.youtube.com/watch?v=m_H3JuybsJ0
+
+    override fun onMapReady(googleMap: GoogleMap?) {
+        googleMap?.let {
+            mMap = it
+
+        }
+        mMap.uiSettings.isZoomControlsEnabled = true
+
+        if (ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Check Permissions Now
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION)
+        } else {
+            mMap.isMyLocationEnabled = true
+        }
+
+
+
+        mMap.setOnMarkerClickListener {
+            if (it.isInfoWindowShown) {
+                it.hideInfoWindow()
+            } else {
+                it.showInfoWindow()
+            }
+
+            changeColor(it.title)
+
+            viewModel.fetchBusRoute(it.tag.toString())
+
+            true
+        }
+        val bornholm = LatLng(55.125436, 14.919486)
+        val zoom = 9.9F
+        //mMap.addMarker(MarkerOptions().position(bornholm).title("Marker on Bornholm"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bornholm, zoom))
+
+
+
+        viewModel.routeCoordinates.observe(viewLifecycleOwner, Observer {
+            routeCoordinates(it.id, it.list)
+        })
+
+        viewModel.liveBus.observe(viewLifecycleOwner, Observer {
+            plotBusMarkers(it)
+        })
+    }
+
+    private fun changeColor(id: String){
+
+        when (id) {
+            "1" -> busColor = resources.getColor(R.color.Bus1and4)
+            "2" -> busColor = resources.getColor(R.color.Bus2)
+            "3" -> busColor = resources.getColor(R.color.Bus3and5)
+            "4" -> busColor = resources.getColor(R.color.Bus1and4)
+            "5" -> busColor = resources.getColor(R.color.Bus3and5)
+            "6" -> busColor = resources.getColor(R.color.Bus6)
+            "7" -> busColor = resources.getColor(R.color.Bus7and8)
+            "8" -> busColor = resources.getColor(R.color.Bus7and8)
+            "9" -> busColor = resources.getColor(R.color.Bus9)
+            "10" -> busColor = resources.getColor(R.color.Bus10)
+            "Færge" -> busColor = resources.getColor(R.color.Boat)
+        }
+
     }
 
     class CustomMarkerView(context: Context, bus: Bus) : ConstraintLayout(context) {
@@ -130,36 +243,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         }
     }
-
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        map_view.onCreate(savedInstanceState)
-        map_view.onResume()
-
-        map_view.getMapAsync(this)
-
-    }
-
-    //Based on this video: https://www.youtube.com/watch?v=m_H3JuybsJ0
-
-    override fun onMapReady(googleMap: GoogleMap?) {
-        googleMap?.let {
-            mMap = it
-        }
-        val bornholm = LatLng(55.125436, 14.919486)
-        val zoom = 9.9F
-        //mMap.addMarker(MarkerOptions().position(bornholm).title("Marker on Bornholm"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bornholm, zoom))
-
-
-
-        viewModel.routeCoordinates.observe(viewLifecycleOwner, Observer {
-            routeCoordinates(it)
-        })
-
-        viewModel.liveBus.observe(viewLifecycleOwner, Observer {
-            busMarkers(it)
-        })
-    }
 }
+
+private var flag = false
+private var busColor: Int = 1
