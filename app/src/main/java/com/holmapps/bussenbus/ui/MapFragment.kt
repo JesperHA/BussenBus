@@ -16,12 +16,10 @@ import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.holmapps.bussenbus.R
 import com.holmapps.bussenbus.api.Bus
+import com.holmapps.bussenbus.api.Coordinate
 import com.holmapps.bussenbus.databinding.MapFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.map_fragment.*
@@ -58,19 +56,34 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         binding.floatingActionButton.setOnClickListener {
             viewModel.fetchBusLocations()
-}
+        }
 
     }
 
-    private fun busMarkers(busList: List<Bus>){
-            mMap.clear()
+    private fun busMarkers(busList: List<Bus>) {
+        mMap.clear()
         busList.forEach { bus ->
             val busPos = LatLng(bus.latitude, bus.longtitude)
             mMap.addMarker(
                 MarkerOptions().position(busPos)
-                    .title(bus.id + " - Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude).icon(getMarkerIcon(bus)).anchor(0.5F, 0.5F)
+                    .title(bus.id + " - Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude)
+                    .icon(getMarkerIcon(bus)).anchor(0.5F, 0.5F)
             )
         }
+
+    }
+
+    private fun routeCoordinates(coordinateList: List<Coordinate>) {
+
+        val points = mutableListOf<LatLng>()
+
+        coordinateList.forEach { coordinate ->
+            points.add(LatLng(coordinate.latitude, coordinate.longtitude))
+        }
+
+        mMap.addPolyline(
+            PolylineOptions().add(points)
+        )
 
     }
 
@@ -83,13 +96,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
-        var bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
+        var bitmap =
+            Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
         var canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
     }
 
-    class CustomMarkerView(context: Context, bus: Bus): ConstraintLayout(context){
+    class CustomMarkerView(context: Context, bus: Bus) : ConstraintLayout(context) {
 
         init {
             LayoutInflater.from(context).inflate(R.layout.custom_bus_marker, this, true)
@@ -102,7 +116,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             image.setImageResource(bus.icon)
             delay.text = bus.delayInMins
 
-            when(bus.title){
+            when (bus.title) {
                 "1" -> image.setColorFilter(resources.getColor(R.color.Bus1and4))
                 "2" -> image.setColorFilter(resources.getColor(R.color.Bus2))
                 "3" -> image.setColorFilter(resources.getColor(R.color.Bus3and5))
@@ -116,7 +130,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 "Færge" -> image.setColorFilter(resources.getColor(R.color.Boat))
             }
 
-            if(bus.delayInMins == "0" || TextUtils.isEmpty(bus.delayInMins)){
+            if (bus.delayInMins == "0" || TextUtils.isEmpty(bus.delayInMins)) {
                 delay.visibility = GONE
             } else {
                 delay.visibility = View.VISIBLE
@@ -127,7 +141,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-    override fun onActivityCreated(savedInstanceState: Bundle?){
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         map_view.onCreate(savedInstanceState)
         map_view.onResume()
@@ -146,6 +160,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val zoom = 9.9F
         //mMap.addMarker(MarkerOptions().position(bornholm).title("Marker on Bornholm"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bornholm, zoom))
+
+
+
+        viewModel.routeCoordinates.observe(viewLifecycleOwner, Observer {
+            routeCoordinates(it)
+        })
 
         viewModel.liveBus.observe(viewLifecycleOwner, Observer {
             busMarkers(it)

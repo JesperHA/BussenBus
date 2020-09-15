@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.holmapps.bussenbus.api.Bus
+import com.holmapps.bussenbus.api.Coordinate
 import com.holmapps.bussenbus.repository.BusRepository
 import dagger.hilt.android.scopes.FragmentScoped
 import kotlinx.coroutines.Dispatchers
@@ -16,12 +17,16 @@ import javax.inject.Inject
 class BusViewModel @Inject constructor(private val repository: BusRepository): ViewModel() {
 
     val liveBus: MutableLiveData<List<Bus>>
+    val routeCoordinates: MutableLiveData<List<Coordinate>>
 
     init {
         liveBus = repository.getBusses()
+        routeCoordinates = repository.getCoordinates()
 
 //        loop()
 
+
+        fetchBusRoute("84/56/18/21/86")
         fetchBusLocations()
     }
 
@@ -31,6 +36,13 @@ class BusViewModel @Inject constructor(private val repository: BusRepository): V
             delay(5000)
             fetchBusLocations()
             loop()
+        }
+    }
+
+    fun fetchBusRoute(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.fetchBusRoute(id)
+            Timber.i("Routes Fetched")
         }
     }
 
