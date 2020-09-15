@@ -68,7 +68,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val busPos = LatLng(bus.latitude, bus.longtitude)
             mMap.addMarker(
                 MarkerOptions().position(busPos)
-                    .title("Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude).icon(getMarkerIcon(bus)).anchor(0.5F, 0.5F)
+                    .title(bus.id + " - Bus " + bus.title + " - " + bus.longtitude + ", " + bus.latitude).icon(getMarkerIcon(bus)).anchor(0.5F, 0.5F)
             )
         }
 

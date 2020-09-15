@@ -4,9 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.holmapps.bussenbus.BuildConfig
-import com.holmapps.bussenbus.api.BusApi
-import com.holmapps.bussenbus.api.BusDeserializer
-import com.holmapps.bussenbus.api.BusResponse
+import com.holmapps.bussenbus.api.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,6 +51,7 @@ object BusModule {
     fun providesGson(): Gson {
         val gsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(BusResponse::class.java, BusDeserializer())
+        gsonBuilder.registerTypeAdapter(RouteResponse::class.java, RouteDeserializer())
         return gsonBuilder.create()
     }
 
