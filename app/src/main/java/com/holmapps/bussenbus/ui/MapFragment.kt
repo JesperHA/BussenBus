@@ -25,6 +25,11 @@ import com.holmapps.bussenbus.api.Bus
 import com.holmapps.bussenbus.databinding.MapFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.map_fragment.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -68,29 +73,45 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     val allMarkers = mutableListOf<Marker>()
 
 
-    private fun plotBusMarkers(busList: List<Bus>, zoomFactor: Float) {
+    private suspend fun plotBusMarkers(busList: List<Bus>, zoomFactor: Float) {
         Timber.i("Plotting busses")
 
-        allMarkers.forEach { marker ->
-            marker.remove()
+//        allMarkers.forEach { marker ->
+//            marker.remove()
+//        }
+//        allMarkers.clear()
+
+        for(i in 0..4) {
+            delay(500)
+            allMarkers.forEach { marker ->
+                marker.remove()
+            }
+            allMarkers.clear()
+
+            busList.forEach { bus ->
+
+                val array = bus.coordinatList[i].asJsonArray
+
+                val longtitude = array[0].asDouble / 1000000
+                val latitude = array[1].asDouble / 1000000
+
+                val markerOptions = MarkerOptions()
+
+                markerOptions.position(LatLng(latitude, longtitude))
+                    .title(bus.title)
+                    .icon(getMarkerIcon(bus, zoomFactor))
+                    .anchor(0.5F, 0.5F)
+
+                val marker: Marker = mMap.addMarker(markerOptions)
+
+                marker.tag = bus.id
+                allMarkers.add(marker)
+            }
+            Timber.i("plotLoop:")
+            delay(500)
         }
-        allMarkers.clear()
-
-        busList.forEach { bus ->
-
-            val markerOptions = MarkerOptions()
-
-            markerOptions.position(LatLng(bus.latitude, bus.longtitude))
-                .title(bus.title)
-                .icon(getMarkerIcon(bus, zoomFactor))
-                .anchor(0.5F, 0.5F)
-
-
-            val marker: Marker = mMap.addMarker(markerOptions)
-
-            marker.tag = bus.id
-            allMarkers.add(marker)
-        }
+        viewModel.fetchBusLocations()
+        Timber.i("Plotted 5 times")
     }
 
     lateinit var polyLine: Polyline
@@ -171,10 +192,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         viewModel.routeCoordinates.observe(viewLifecycleOwner, Observer {
             routeCoordinates(it.list)
         })
-
+        var job: Job? = null
         lateinit var busList: List<Bus>
         viewModel.liveBus.observe(viewLifecycleOwner, Observer {
-            plotBusMarkers(it, mMap.cameraPosition.zoom)
+            job?.cancel()
+            val uiScope = CoroutineScope(Main)
+
+            job = uiScope.launch(Main) {plotBusMarkers(it, mMap.cameraPosition.zoom)}
             busList = it
             isBusListInit = true
 
@@ -183,6 +207,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         var zoomCheck = mMap.cameraPosition.zoom
         Timber.i("isBusListInit?: " + isBusListInit.toString())
         mMap.setOnCameraIdleListener() {
+            viewModel.fetchBusLocations()
             viewModel.setLoopBool(true)
 
 //            if (isBusListInit == true && zoomCheck != mMap.cameraPosition.zoom) {
@@ -194,8 +219,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
         mMap.setOnCameraMoveListener {
+            job?.cancel()
             viewModel.setLoopBool(false)
             if (isBusListInit == true && zoomCheck != mMap.cameraPosition.zoom) {
+                job?.cancel()
 //                plotBusMarkers(busList, mMap.cameraPosition.zoom)
                 viewModel.setLoopBool(false)
                 zoomCheck = mMap.cameraPosition.zoom

@@ -61,6 +61,7 @@ class BusRepository @Inject constructor(
     fun getCoordinates() = busRoute
 
     private fun saveBusses(busList: List<Bus>){
+
         allBusses.postValue(busList)
     }
 

@@ -17,13 +17,11 @@ import javax.inject.Inject
 @FragmentScoped
 class BusViewModel @Inject constructor(private val repository: BusRepository) : ViewModel() {
 
-    val liveBus: MutableLiveData<List<Bus>>
-    val routeCoordinates: MutableLiveData<RouteObject>
+    val liveBus: MutableLiveData<List<Bus>> = repository.getBusses()
+    val routeCoordinates: MutableLiveData<RouteObject> = repository.getCoordinates()
 
 
     init {
-        liveBus = repository.getBusses()
-        routeCoordinates = repository.getCoordinates()
 
 //        loop()
 
@@ -32,16 +30,15 @@ class BusViewModel @Inject constructor(private val repository: BusRepository) : 
 
     }
 
-    var job : Job? = null
+    var job: Job? = null
 
     fun loop() {
         Timber.i("loopBool in loop function: " + loopBool.toString())
         job?.cancel()
         if (loopBool == true) {
             job = viewModelScope.launch(Dispatchers.IO) {
-//                delay(100)
                 repository.fetchBusLocations()
-                delay(1000)
+                delay(5000)
                 loop()
 
             }
@@ -50,8 +47,8 @@ class BusViewModel @Inject constructor(private val repository: BusRepository) : 
 
     fun setLoopBool(bool: Boolean) {
         loopBool = bool
-        if(bool) {
-            loop()
+        if (bool) {
+//            loop()
         }
     }
 

@@ -39,6 +39,7 @@ class BusDeserializer() : JsonDeserializer<BusResponse> {
                 val title = item[0].asString.replace("Bus    ", "").trim()
                 val longtitude = item[1].asDouble / 1000000
                 val latitude = item[2].asDouble / 1000000
+                val coordinateList = item[8].asJsonArray
                 val id = item[3].asString
                 val nextStop = item[11].asString.replace(" (Bornholm)", "")
                 var icon: Int
@@ -49,7 +50,7 @@ class BusDeserializer() : JsonDeserializer<BusResponse> {
                 }
                 val delayInMins = item[6].asString
 
-                list.add(Bus(title, longtitude, latitude, id, nextStop, icon, delayInMins))
+                list.add(Bus(title, longtitude, latitude, coordinateList, id, nextStop, icon, delayInMins))
             }
 
         }
