@@ -8,16 +8,18 @@ import com.holmapps.bussenbus.repository.BusRepository
 import com.holmapps.bussenbus.repository.RouteObject
 import dagger.hilt.android.scopes.FragmentScoped
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 @FragmentScoped
-class BusViewModel @Inject constructor(private val repository: BusRepository): ViewModel() {
+class BusViewModel @Inject constructor(private val repository: BusRepository) : ViewModel() {
 
     val liveBus: MutableLiveData<List<Bus>>
     val routeCoordinates: MutableLiveData<RouteObject>
+
 
     init {
         liveBus = repository.getBusses()
@@ -30,11 +32,25 @@ class BusViewModel @Inject constructor(private val repository: BusRepository): V
 
     }
 
+    var job : Job? = null
 
-    private fun loop(){
-        viewModelScope.launch(Dispatchers.IO){
-            delay(1000)
-            fetchBusLocations()
+    fun loop() {
+        Timber.i("loopBool in loop function: " + loopBool.toString())
+        job?.cancel()
+        if (loopBool == true) {
+            job = viewModelScope.launch(Dispatchers.IO) {
+//                delay(100)
+                repository.fetchBusLocations()
+                delay(1000)
+                loop()
+
+            }
+        }
+    }
+
+    fun setLoopBool(bool: Boolean) {
+        loopBool = bool
+        if(bool) {
             loop()
         }
     }
@@ -55,3 +71,5 @@ class BusViewModel @Inject constructor(private val repository: BusRepository): V
     }
 
 }
+
+var loopBool: Boolean = true

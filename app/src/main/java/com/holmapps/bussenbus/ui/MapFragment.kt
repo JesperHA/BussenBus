@@ -76,7 +76,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
         allMarkers.clear()
 
-//        var timer = 0
         busList.forEach { bus ->
 
             val markerOptions = MarkerOptions()
@@ -91,48 +90,33 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             marker.tag = bus.id
             allMarkers.add(marker)
-//            timer ++
         }
-
-//        Timber.i("Timer: " + timer.toString())
-//        Timber.i("Markers: " + allMarkers.toString())
-//        Timber.i("isBusListinit: " + isBusListInit.toString())
     }
 
     lateinit var polyLine: Polyline
 
     private fun routeCoordinates(coordinateList: List<LatLng>) {
 
-        if (flag == true) {
+        if (polylineExist == true) {
             polyLine.remove()
         }
         polyLine = mMap.addPolyline(
             PolylineOptions().addAll(coordinateList).color(busColor)
-
         )
+        polylineExist = true
 
-        flag = true
-
-//        Timber.i("PolyLines: " + polyLine.toString())
     }
 
     private fun getMarkerIcon(bus: Bus, zoomFactor: Float): BitmapDescriptor? {
         val markerView = CustomMarkerView(requireContext(), bus, zoomFactor)
         return BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerView))
-
-
     }
 
     private fun getBitmapFromView(view: View): Bitmap? {
-
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
         var bitmap =
             Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
-
-
-        Timber.i("marker width and height: " + view.measuredWidth + " + " + view.measuredHeight)
-
         var canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
@@ -143,9 +127,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onActivityCreated(savedInstanceState)
         map_view.onCreate(savedInstanceState)
         map_view.onResume()
-
         map_view.getMapAsync(this)
-
     }
 
     //Based on this video: https://www.youtube.com/watch?v=m_H3JuybsJ0
@@ -155,10 +137,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mMap = it
 
         }
+        val bornholm = LatLng(55.125436, 14.919486)
+        val zoom = 9.9F
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bornholm, zoom))
         mMap.uiSettings.isZoomControlsEnabled = true
-
-//        Timber.i("zoom level: " + mMap.cameraPosition.zoom.toString())
-
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -174,25 +156,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mMap.isMyLocationEnabled = true
         }
 
-
-
         mMap.setOnMarkerClickListener {
             if (it.isInfoWindowShown) {
                 it.hideInfoWindow()
             } else {
                 it.showInfoWindow()
             }
-
             changeColor(it.title)
-
             viewModel.fetchBusRoute(it.tag.toString())
-
             true
         }
-        val bornholm = LatLng(55.125436, 14.919486)
-        val zoom = 9.9F
-        //mMap.addMarker(MarkerOptions().position(bornholm).title("Marker on Bornholm"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bornholm, zoom))
 
 
         viewModel.routeCoordinates.observe(viewLifecycleOwner, Observer {
@@ -200,7 +173,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
 
         lateinit var busList: List<Bus>
-
         viewModel.liveBus.observe(viewLifecycleOwner, Observer {
             plotBusMarkers(it, mMap.cameraPosition.zoom)
             busList = it
@@ -209,21 +181,33 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         })
 
         var zoomCheck = mMap.cameraPosition.zoom
-
         Timber.i("isBusListInit?: " + isBusListInit.toString())
         mMap.setOnCameraIdleListener() {
+            viewModel.setLoopBool(true)
 
+//            if (isBusListInit == true && zoomCheck != mMap.cameraPosition.zoom) {
+////                plotBusMarkers(busList, mMap.cameraPosition.zoom)
+//                viewModel.setLoopBool(false)
+//                zoomCheck = mMap.cameraPosition.zoom
+                Timber.i("Reaching OnCameraIdleListener")
+//            }
+        }
 
+        mMap.setOnCameraMoveListener {
+            viewModel.setLoopBool(false)
             if (isBusListInit == true && zoomCheck != mMap.cameraPosition.zoom) {
-
-                plotBusMarkers(busList, mMap.cameraPosition.zoom)
+//                plotBusMarkers(busList, mMap.cameraPosition.zoom)
+                viewModel.setLoopBool(false)
                 zoomCheck = mMap.cameraPosition.zoom
-                Timber.i("Reaching OnCameraMoveListener")
+                Timber.i("Reaching OnCameraIdleListener")
             }
 
         }
-
-
+//        mMap.setOnCameraMoveStartedListener {
+//            viewModel.setLoopBool(false)
+//
+//
+//        }
     }
 
     private fun changeColor(id: String) {
@@ -240,8 +224,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             "9" -> busColor = resources.getColor(R.color.Bus9)
             "10" -> busColor = resources.getColor(R.color.Bus10)
             "Færge" -> busColor = resources.getColor(R.color.Boat)
+            else -> busColor = resources.getColor(R.color.standard)
         }
-
     }
 
     class CustomMarkerView(context: Context, bus: Bus, zoomFactor: Float) :
@@ -254,25 +238,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val title = findViewById<TextView>(R.id.bus_title)
             val delay = findViewById<TextView>(R.id.bus_delay)
 
-            //Min size 160
-            //Max size 210
 
             val maxSize = 210
-            val minSize = 140
-
-//            Timber.i("Zoom factor: " + zoomFactor)
+            val minSize = 160
+            val factor = zoomFactor / 12.5
 
             val lp =
                 image.getLayoutParams()
 
-            val factor = zoomFactor / 12.5
-
-//            Timber.i("calculated zoom factor: " + factor)
-
             val height = lp.height * factor
             val width = lp.width * factor
-
-            Timber.i("")
 
             if (height > maxSize && width > maxSize) {
                 lp.height = maxSize
@@ -284,9 +259,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 lp.height = height.toInt()
                 lp.width = width.toInt()
             }
-
             image.setLayoutParams(lp)
-//            image.invalidate()
+            image.invalidate()
 
             title.text = bus.title
             image.setImageResource(bus.icon)
@@ -304,6 +278,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 "9" -> image.setColorFilter(resources.getColor(R.color.Bus9))
                 "10" -> image.setColorFilter(resources.getColor(R.color.Bus10))
                 "Færge" -> image.setColorFilter(resources.getColor(R.color.Boat))
+                else -> image.setColorFilter(resources.getColor(R.color.standard))
             }
 
             if (bus.delayInMins == "0" || TextUtils.isEmpty(bus.delayInMins)) {
@@ -318,5 +293,5 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 }
 
 private var isBusListInit = false
-private var flag = false
+private var polylineExist = false
 private var busColor: Int = 1
