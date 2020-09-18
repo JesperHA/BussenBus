@@ -8,8 +8,6 @@ import com.holmapps.bussenbus.repository.BusRepository
 import com.holmapps.bussenbus.repository.RouteObject
 import dagger.hilt.android.scopes.FragmentScoped
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -22,34 +20,7 @@ class BusViewModel @Inject constructor(private val repository: BusRepository) : 
 
 
     init {
-
-//        loop()
-
-
         fetchBusLocations()
-
-    }
-
-    var job: Job? = null
-
-    fun loop() {
-        Timber.i("loopBool in loop function: " + loopBool.toString())
-        job?.cancel()
-        if (loopBool == true) {
-            job = viewModelScope.launch(Dispatchers.IO) {
-                repository.fetchBusLocations()
-                delay(5000)
-                loop()
-
-            }
-        }
-    }
-
-    fun setLoopBool(bool: Boolean) {
-        loopBool = bool
-        if (bool) {
-//            loop()
-        }
     }
 
     fun fetchBusRoute(id: String) {
@@ -66,7 +37,4 @@ class BusViewModel @Inject constructor(private val repository: BusRepository) : 
             Timber.i("Locations Fetched")
         }
     }
-
 }
-
-var loopBool: Boolean = true

@@ -30,7 +30,6 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -40,6 +39,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val REQUEST_LOCATION: Int = 1
     private lateinit var mMap: GoogleMap
+    private val uiScope = CoroutineScope(Main)
 
     companion object {
         fun newInstance() = MapFragment()
@@ -70,25 +70,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    // Putting markers in list to enable removal of markerrs without clearing entire map
     val allMarkers = mutableListOf<Marker>()
+    val updateRateInMillis: Long = 1000
 
 
     private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
-//        Timber.i("Plotting busses")
 
-//        allMarkers.forEach { marker ->
-//            marker.remove()
-//        }
-//        allMarkers.clear()
-        var counter = 0
         for(i in 0 until busList[0].coordinatList.size() - 1) {
-//            delay(500)
 
+//            delay(500)
             allMarkers.forEach { marker ->
                 marker.remove()
             }
             allMarkers.clear()
-
 
 
             busList.forEach { bus ->
@@ -105,17 +100,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     .icon(getMarkerIcon(bus, zoomLevel))
                     .anchor(0.5F, 0.5F)
 
-                val marker: Marker = mMap.addMarker(markerOptions)
+                val newMarker: Marker = mMap.addMarker(markerOptions)
 
-                marker.tag = bus.id
-                allMarkers.add(marker)
+                newMarker.tag = bus.id
+                allMarkers.add(newMarker)
             }
-            Timber.i("plotLoop:")
-            counter ++
-            delay(1000)
+
+
+
+            delay(updateRateInMillis)
         }
         viewModel.fetchBusLocations()
-        Timber.i("Plotted " + counter + " times")
     }
 
     lateinit var polyLine: Polyline
@@ -197,30 +192,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             routeCoordinates(it.list)
         })
         var job: Job? = null
-        lateinit var busList: List<Bus>
+
         viewModel.liveBus.observe(viewLifecycleOwner, Observer {
             job?.cancel()
-            val uiScope = CoroutineScope(Main)
 
-            job = uiScope.launch(Main) {plotBusMarkers(it, mMap.cameraPosition.zoom)}
-            busList = it
-            isBusListInit = true
-
+            mMap.setOnMapLoadedCallback {
+            job = uiScope.launch(Main) {
+                    plotBusMarkers(it, mMap.cameraPosition.zoom)
+                }
+            }
         })
 
         var zoomCheck = mMap.cameraPosition.zoom
-        Timber.i("isBusListInit?: " + isBusListInit.toString())
-        mMap.setOnCameraIdleListener() {
+        mMap.setOnCameraIdleListener {
             viewModel.fetchBusLocations()
-            viewModel.setLoopBool(true)
         }
 
         mMap.setOnCameraMoveListener {
             job?.cancel()
-            viewModel.setLoopBool(false)
-            if (isBusListInit == true && zoomCheck != mMap.cameraPosition.zoom) {
+            if (zoomCheck != mMap.cameraPosition.zoom) {
                 job?.cancel()
-                viewModel.setLoopBool(false)
                 zoomCheck = mMap.cameraPosition.zoom
             }
         }
@@ -254,15 +245,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val title = findViewById<TextView>(R.id.bus_title)
             val delay = findViewById<TextView>(R.id.bus_delay)
 
-
-            val maxSize = 210
-//            val minSize = 160
             val minFactor = 0.78F
             val maxFactor = 1.035F
             val zoomFactor = zoomLevel / 12.5
             title.textSize = 7F
-//            title.textSize = (22 * zoomFactor).toFloat()
-
 
             val lp =
                 image.layoutParams
@@ -284,9 +270,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 lp.width = width.toInt()
                 title.textSize = (title.textSize * zoomFactor).toFloat()
             }
-
-//            Timber.i("Size and zoomFactor: " + lp.height + " + " + zoomFactor)
-
 
             image.layoutParams = lp
             image.invalidate()
@@ -321,6 +304,5 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 }
 
-private var isBusListInit = false
 private var polylineExist = false
 private var busColor: Int = 1
