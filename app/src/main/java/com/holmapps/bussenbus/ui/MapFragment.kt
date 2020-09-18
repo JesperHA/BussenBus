@@ -73,7 +73,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     val allMarkers = mutableListOf<Marker>()
 
 
-    private suspend fun plotBusMarkers(busList: List<Bus>, zoomFactor: Float) {
+    private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
         Timber.i("Plotting busses")
 
 //        allMarkers.forEach { marker ->
@@ -99,7 +99,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 markerOptions.position(LatLng(latitude, longtitude))
                     .title(bus.title)
-                    .icon(getMarkerIcon(bus, zoomFactor))
+                    .icon(getMarkerIcon(bus, zoomLevel))
                     .anchor(0.5F, 0.5F)
 
                 val marker: Marker = mMap.addMarker(markerOptions)
@@ -128,8 +128,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    private fun getMarkerIcon(bus: Bus, zoomFactor: Float): BitmapDescriptor? {
-        val markerView = CustomMarkerView(requireContext(), bus, zoomFactor)
+    private fun getMarkerIcon(bus: Bus, zoomLevel: Float): BitmapDescriptor? {
+        val markerView = CustomMarkerView(requireContext(), bus, zoomLevel)
         return BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerView))
     }
 
@@ -255,7 +255,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    class CustomMarkerView(context: Context, bus: Bus, zoomFactor: Float) :
+    class CustomMarkerView(context: Context, bus: Bus, zoomLevel: Float) :
         ConstraintLayout(context) {
 
         init {
@@ -268,13 +268,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             val maxSize = 210
             val minSize = 160
-            val factor = zoomFactor / 12.5
+            val zoomFactor = zoomLevel / 12.5
 
             val lp =
                 image.getLayoutParams()
 
-            val height = lp.height * factor
-            val width = lp.width * factor
+            val height = lp.height * zoomFactor
+            val width = lp.width * zoomFactor
 
             if (height > maxSize && width > maxSize) {
                 lp.height = maxSize
