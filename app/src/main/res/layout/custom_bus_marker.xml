@@ -58,9 +58,8 @@
         android:text="TextView"
 
         android:textAlignment="center"
-        android:textColor="#000000"
+        android:textColor="#FFF"
         android:textSize="14sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/bus_circle"
         app:layout_constraintTop_toTopOf="@+id/bus_circle"
         tools:text="5" />

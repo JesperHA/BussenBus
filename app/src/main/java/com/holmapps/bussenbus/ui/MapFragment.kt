@@ -74,19 +74,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
-        Timber.i("Plotting busses")
+//        Timber.i("Plotting busses")
 
 //        allMarkers.forEach { marker ->
 //            marker.remove()
 //        }
 //        allMarkers.clear()
+        var counter = 0
+        for(i in 0 until busList[0].coordinatList.size() - 1) {
+//            delay(500)
 
-        for(i in 0..4) {
-            delay(500)
             allMarkers.forEach { marker ->
                 marker.remove()
             }
             allMarkers.clear()
+
+
 
             busList.forEach { bus ->
 
@@ -108,10 +111,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 allMarkers.add(marker)
             }
             Timber.i("plotLoop:")
-            delay(500)
+            counter ++
+            delay(1000)
         }
         viewModel.fetchBusLocations()
-        Timber.i("Plotted 5 times")
+        Timber.i("Plotted " + counter + " times")
     }
 
     lateinit var polyLine: Polyline
@@ -209,13 +213,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mMap.setOnCameraIdleListener() {
             viewModel.fetchBusLocations()
             viewModel.setLoopBool(true)
-
-//            if (isBusListInit == true && zoomCheck != mMap.cameraPosition.zoom) {
-////                plotBusMarkers(busList, mMap.cameraPosition.zoom)
-//                viewModel.setLoopBool(false)
-//                zoomCheck = mMap.cameraPosition.zoom
-                Timber.i("Reaching OnCameraIdleListener")
-//            }
         }
 
         mMap.setOnCameraMoveListener {
@@ -223,18 +220,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewModel.setLoopBool(false)
             if (isBusListInit == true && zoomCheck != mMap.cameraPosition.zoom) {
                 job?.cancel()
-//                plotBusMarkers(busList, mMap.cameraPosition.zoom)
                 viewModel.setLoopBool(false)
                 zoomCheck = mMap.cameraPosition.zoom
-                Timber.i("Reaching OnCameraIdleListener")
             }
-
         }
-//        mMap.setOnCameraMoveStartedListener {
-//            viewModel.setLoopBool(false)
-//
-//
-//        }
     }
 
     private fun changeColor(id: String) {
@@ -267,26 +256,39 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
             val maxSize = 210
-            val minSize = 160
+//            val minSize = 160
+            val minFactor = 0.78F
+            val maxFactor = 1.035F
             val zoomFactor = zoomLevel / 12.5
+            title.textSize = 7F
+//            title.textSize = (22 * zoomFactor).toFloat()
+
 
             val lp =
-                image.getLayoutParams()
+                image.layoutParams
 
             val height = lp.height * zoomFactor
             val width = lp.width * zoomFactor
+            val minSize = (lp.height * minFactor).toInt()
 
-            if (height > maxSize && width > maxSize) {
-                lp.height = maxSize
-                lp.width = maxSize
-            } else if (height < minSize && width < minSize) {
-                lp.height = minSize
-                lp.width = minSize
+            if (maxFactor < zoomFactor) {
+                lp.height = (lp.height * maxFactor).toInt()
+                lp.width = (lp.width * maxFactor).toInt()
+                title.textSize = (title.textSize * maxFactor)
+            } else if (minFactor > zoomFactor) {
+                lp.height = (lp.height * minFactor).toInt()
+                lp.width = (lp.width * minFactor).toInt()
+                title.textSize = (title.textSize * minFactor)
             } else {
                 lp.height = height.toInt()
                 lp.width = width.toInt()
+                title.textSize = (title.textSize * zoomFactor).toFloat()
             }
-            image.setLayoutParams(lp)
+
+//            Timber.i("Size and zoomFactor: " + lp.height + " + " + zoomFactor)
+
+
+            image.layoutParams = lp
             image.invalidate()
 
             title.text = bus.title
