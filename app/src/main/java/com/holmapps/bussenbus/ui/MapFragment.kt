@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -40,6 +41,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val REQUEST_LOCATION: Int = 1
     private lateinit var mMap: GoogleMap
     private val uiScope = CoroutineScope(Main)
+    private lateinit var polyLine: Polyline
 
     companion object {
         fun newInstance() = MapFragment()
@@ -71,8 +73,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     // Putting markers in list to enable removal of markerrs without clearing entire map
-    val allMarkers = mutableListOf<Marker>()
-    val updateRateInMillis: Long = 1000
+    private val allMarkers = mutableListOf<Marker>()
+    private val updateRateInMillis: Long = 1000
 
 
     private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
@@ -90,12 +92,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 val array = bus.coordinatList[i].asJsonArray
 
-                val longtitude = array[0].asDouble / 1000000
+                val longitude = array[0].asDouble / 1000000
                 val latitude = array[1].asDouble / 1000000
 
                 val markerOptions = MarkerOptions()
 
-                markerOptions.position(LatLng(latitude, longtitude))
+                markerOptions.position(LatLng(latitude, longitude))
                     .title(bus.title)
                     .icon(getMarkerIcon(bus, zoomLevel))
                     .anchor(0.5F, 0.5F)
@@ -113,11 +115,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         viewModel.fetchBusLocations()
     }
 
-    lateinit var polyLine: Polyline
+
 
     private fun routeCoordinates(coordinateList: List<LatLng>) {
 
-        if (polylineExist == true) {
+        if (polylineExist) {
             polyLine.remove()
         }
         polyLine = mMap.addPolyline(
@@ -128,7 +130,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun getMarkerIcon(bus: Bus, zoomLevel: Float): BitmapDescriptor? {
-        val markerView = CustomMarkerView(requireContext(), bus, zoomLevel)
+        val markerView = CustomMarkerView(requireContext(), bus, zoomLevel, ::getColor)
         return BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerView))
     }
 
@@ -179,10 +181,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mMap.setOnMarkerClickListener {
             if (it.isInfoWindowShown) {
                 it.hideInfoWindow()
+
             } else {
                 it.showInfoWindow()
             }
-            changeColor(it.title)
+            busColor = getColor(it.title)
             viewModel.fetchBusRoute(it.tag.toString())
             true
         }
@@ -217,25 +220,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun changeColor(id: String) {
+    private fun getColor(id: String): Int {
 
-        when (id) {
-            "1" -> busColor = resources.getColor(R.color.Bus1and4)
-            "2" -> busColor = resources.getColor(R.color.Bus2)
-            "3" -> busColor = resources.getColor(R.color.Bus3and5)
-            "4" -> busColor = resources.getColor(R.color.Bus1and4)
-            "5" -> busColor = resources.getColor(R.color.Bus3and5)
-            "6" -> busColor = resources.getColor(R.color.Bus6)
-            "7" -> busColor = resources.getColor(R.color.Bus7and8)
-            "8" -> busColor = resources.getColor(R.color.Bus7and8)
-            "9" -> busColor = resources.getColor(R.color.Bus9)
-            "10" -> busColor = resources.getColor(R.color.Bus10)
-            "Færge" -> busColor = resources.getColor(R.color.Boat)
-            else -> busColor = resources.getColor(R.color.standard)
+        return when (id) {
+            "1" -> ContextCompat.getColor(requireContext(), R.color.Bus1and4)
+            "2" -> ContextCompat.getColor(requireContext(), R.color.Bus2)
+            "3" -> ContextCompat.getColor(requireContext(), R.color.Bus3and5)
+            "4" -> ContextCompat.getColor(requireContext(), R.color.Bus1and4)
+            "5" -> ContextCompat.getColor(requireContext(), R.color.Bus3and5)
+            "6" -> ContextCompat.getColor(requireContext(), R.color.Bus6)
+            "7" -> ContextCompat.getColor(requireContext(), R.color.Bus7and8)
+            "8" -> ContextCompat.getColor(requireContext(), R.color.Bus7and8)
+            "9" -> ContextCompat.getColor(requireContext(), R.color.Bus9)
+            "10" -> ContextCompat.getColor(requireContext(), R.color.Bus10)
+            "Færge" -> ContextCompat.getColor(requireContext(), R.color.Boat)
+            else -> ContextCompat.getColor(requireContext(), R.color.standard)
         }
     }
 
-    class CustomMarkerView(context: Context, bus: Bus, zoomLevel: Float) :
+    class CustomMarkerView(context: Context, bus: Bus, zoomLevel: Float, getColor: (id: String) -> Int) :
         ConstraintLayout(context) {
 
         init {
@@ -250,12 +253,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val zoomFactor = zoomLevel / 12.5
             title.textSize = 7F
 
-            val lp =
-                image.layoutParams
+            val lp = image.layoutParams
 
             val height = lp.height * zoomFactor
             val width = lp.width * zoomFactor
-            val minSize = (lp.height * minFactor).toInt()
 
             if (maxFactor < zoomFactor) {
                 lp.height = (lp.height * maxFactor).toInt()
@@ -278,20 +279,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             image.setImageResource(bus.icon)
             delay.text = bus.delayInMins
 
-            when (bus.title) {
-                "1" -> image.setColorFilter(resources.getColor(R.color.Bus1and4))
-                "2" -> image.setColorFilter(resources.getColor(R.color.Bus2))
-                "3" -> image.setColorFilter(resources.getColor(R.color.Bus3and5))
-                "4" -> image.setColorFilter(resources.getColor(R.color.Bus1and4))
-                "5" -> image.setColorFilter(resources.getColor(R.color.Bus3and5))
-                "6" -> image.setColorFilter(resources.getColor(R.color.Bus6))
-                "7" -> image.setColorFilter(resources.getColor(R.color.Bus7and8))
-                "8" -> image.setColorFilter(resources.getColor(R.color.Bus7and8))
-                "9" -> image.setColorFilter(resources.getColor(R.color.Bus9))
-                "10" -> image.setColorFilter(resources.getColor(R.color.Bus10))
-                "Færge" -> image.setColorFilter(resources.getColor(R.color.Boat))
-                else -> image.setColorFilter(resources.getColor(R.color.standard))
-            }
+            image.setColorFilter(getColor(bus.title))
+
 
             if (bus.delayInMins == "0" || TextUtils.isEmpty(bus.delayInMins)) {
                 delay.visibility = GONE
