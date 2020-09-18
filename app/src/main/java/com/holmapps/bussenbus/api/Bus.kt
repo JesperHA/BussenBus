@@ -9,6 +9,7 @@ data class Bus(
     var latitude: Double,
     val coordinatList: JsonArray,
     val id: String,
+    val destination: String,
     val nextStop: String,
     val icon: Int,
     val delayInMins: String

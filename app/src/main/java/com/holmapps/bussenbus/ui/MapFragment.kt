@@ -44,6 +44,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private val uiScope = CoroutineScope(Main)
     private lateinit var polyLine: Polyline
+    lateinit var busList: List<Bus>
 
     companion object {
         fun newInstance() = MapFragment()
@@ -67,11 +68,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val binding = MapFragmentBinding.bind(view)
 
-
-//        binding.floatingActionButton.setOnClickListener {
-//            viewModel.fetchBusLocations()
-//        }
-
     }
 
     // Putting markers in list to enable removal of markerrs without clearing entire map
@@ -80,6 +76,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
+
 
         for(i in 0 until busList[0].coordinatList.size() - 1) {
 
@@ -110,9 +107,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 allMarkers.add(newMarker)
             }
 
-
-
             delay(updateRateInMillis)
+        }
+        if (currentBusId.isNotEmpty()) {
+            bus_info.text = busInfoGenerator(currentBusId)
         }
         viewModel.fetchBusLocations()
     }
@@ -180,16 +178,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mMap.isMyLocationEnabled = true
         }
 
-        mMap.setOnMarkerClickListener {
-                        
-            if (it.isInfoWindowShown) {
-                it.hideInfoWindow()
+        mMap.setOnMapClickListener {
+            bus_info.visibility = View.INVISIBLE
+        }
 
-            } else {
-                it.showInfoWindow()
-            }
-            busColor = getColor(it.title)
-            viewModel.fetchBusRoute(it.tag.toString())
+
+
+        mMap.setOnMarkerClickListener {marker ->
+
+            bus_info.visibility = View.VISIBLE
+            currentBusId = marker.tag.toString()
+
+            bus_info.text = busInfoGenerator(currentBusId)
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.position, zoomLevel))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.position, zoomLevel))
+            busColor = getColor(marker.title)
+            viewModel.fetchBusRoute(marker.tag.toString())
             true
         }
 
@@ -197,49 +201,82 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         viewModel.routeCoordinates.observe(viewLifecycleOwner, Observer {
             routeCoordinates(it.list)
         })
-        var job: Job? = null
+        var plotMarkerJob: Job? = null
+
 
         viewModel.liveBus.observe(viewLifecycleOwner, Observer {
-            job?.cancel()
+            plotMarkerJob?.cancel()
+            busList = it
 
             mMap.setOnMapLoadedCallback {
-            job = uiScope.launch(Main) {
+            plotMarkerJob = uiScope.launch(Main) {
                     plotBusMarkers(it, mMap.cameraPosition.zoom)
                 }
             }
         })
 
-        //moves compass button
-            map_view.findViewWithTag<View>("GoogleMapMyLocationButton").parent?.let { parent ->
-                val vg: ViewGroup = parent as ViewGroup
-                vg.post {
-                    val mapCompass: View = parent.getChildAt(4)
-                    val rlp = RelativeLayout.LayoutParams(mapCompass.height, mapCompass.height)
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0)
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0)
-
-                    val topMargin = (58 * Resources.getSystem().displayMetrics.density).toInt()
-                    val rightMargin = (11 * Resources.getSystem().displayMetrics.density).toInt()
-                    rlp.setMargins(0, topMargin, rightMargin, 0)
-                    mapCompass.layoutParams = rlp
-                }
-            }
 
 
-        var zoomCheck = mMap.cameraPosition.zoom
         mMap.setOnCameraIdleListener {
             viewModel.fetchBusLocations()
         }
 
+        var zoomCheck = mMap.cameraPosition.zoom
         mMap.setOnCameraMoveListener {
-            job?.cancel()
+            plotMarkerJob?.cancel()
             if (zoomCheck != mMap.cameraPosition.zoom) {
-                job?.cancel()
+                plotMarkerJob?.cancel()
                 zoomCheck = mMap.cameraPosition.zoom
+                zoomLevel = zoomCheck
             }
         }
+
+
+        //moves compass button
+        map_view.findViewWithTag<View>("GoogleMapMyLocationButton").parent?.let { parent ->
+            val vg: ViewGroup = parent as ViewGroup
+            vg.post {
+                val mapCompass: View = parent.getChildAt(4)
+                val rlp = RelativeLayout.LayoutParams(mapCompass.height, mapCompass.height)
+                rlp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0)
+                rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0)
+
+                val topMargin = (58 * Resources.getSystem().displayMetrics.density).toInt()
+                val rightMargin = (11 * Resources.getSystem().displayMetrics.density).toInt()
+                rlp.setMargins(0, topMargin, rightMargin, 0)
+                mapCompass.layoutParams = rlp
+            }
+        }
+    }
+
+    private fun busInfoGenerator(tag: String): String {
+        val builder = StringBuilder()
+        var result = ""
+        if (!busList.isEmpty()) {
+            busList.forEach { bus ->
+                if (bus.id == tag) {
+                    builder.append("Bus ").append(bus.title).append(" mod ").append(bus.destination)
+                        .append("\nNæste stop: ").append(bus.nextStop)
+                        .append(
+                            if (bus.delayInMins == "0") {
+                                "\nKører til tiden"
+                            } else {
+                                "\nForsinkelse: "
+                            }
+                        ).append(
+                            if (bus.delayInMins == "0") {
+                                ""
+                            } else {
+                                bus.delayInMins
+                            }
+                        )
+                    result = builder.toString()
+                }
+            }
+        }
+        return result
     }
 
     private fun getColor(id: String): Int {
@@ -315,5 +352,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 }
 
+private var zoomLevel = 0F
+private var currentBusId = ""
 private var polylineExist = false
 private var busColor: Int = 1
