@@ -3,6 +3,7 @@ package com.holmapps.bussenbus.ui
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -30,6 +32,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -64,9 +67,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val binding = MapFragmentBinding.bind(view)
 
 
-        binding.floatingActionButton.setOnClickListener {
-            viewModel.fetchBusLocations()
-        }
+//        binding.floatingActionButton.setOnClickListener {
+//            viewModel.fetchBusLocations()
+//        }
 
     }
 
@@ -177,6 +180,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
         mMap.setOnMarkerClickListener {
+                        
             if (it.isInfoWindowShown) {
                 it.hideInfoWindow()
             } else {
@@ -202,6 +206,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         })
+
+        //moves compass button
+            map_view.findViewWithTag<View>("GoogleMapMyLocationButton").parent?.let { parent ->
+                val vg: ViewGroup = parent as ViewGroup
+                vg.post {
+                    val mapCompass: View = parent.getChildAt(4)
+                    val rlp = RelativeLayout.LayoutParams(mapCompass.height, mapCompass.height)
+                    rlp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0)
+                    rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                    rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                    rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0)
+
+                    val topMargin = (58 * Resources.getSystem().displayMetrics.density).toInt()
+                    val rightMargin = (11 * Resources.getSystem().displayMetrics.density).toInt()
+                    rlp.setMargins(0, topMargin, rightMargin, 0)
+                    mapCompass.layoutParams = rlp
+                }
+            }
+
 
         var zoomCheck = mMap.cameraPosition.zoom
         mMap.setOnCameraIdleListener {
