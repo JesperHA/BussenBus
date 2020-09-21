@@ -77,14 +77,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
 
+        allMarkers.forEach { marker ->
+            marker.remove()
+        }
+        allMarkers.clear()
 
+        if (currentBusId.isEmpty()){
+            bus_info.visibility = View.INVISIBLE
+            if (polylineExist) {
+                polyLine.remove()
+            }
+        }
+
+    if (busList.isNotEmpty()){
         for(i in 0 until busList[0].coordinatList.size() - 1) {
 
 //            delay(500)
-            allMarkers.forEach { marker ->
-                marker.remove()
-            }
-            allMarkers.clear()
+
 
 
             busList.forEach { bus ->
@@ -109,6 +118,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             delay(updateRateInMillis)
         }
+        } else {
+        bus_info.text = "Ingen busser kører på nuværende tidspunkt."
+        bus_info.visibility = View.VISIBLE
+        currentBusId = ""
+    }
         if (currentBusId.isNotEmpty()) {
             bus_info.text = busInfoGenerator(currentBusId)
         }
