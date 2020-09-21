@@ -77,58 +77,59 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
 
-        allMarkers.forEach { marker ->
-            marker.remove()
-        }
-        allMarkers.clear()
 
-        if (currentBusId.isEmpty()){
+        if (busList.isEmpty()) {
             bus_info.visibility = View.INVISIBLE
             if (polylineExist) {
                 polyLine.remove()
             }
         }
 
-    if (busList.isNotEmpty()){
-        for(i in 0 until busList[0].coordinatList.size() - 1) {
-
+        if (busList.isNotEmpty()) {
+            for (i in 0 until busList[0].coordinatList.size() - 1) {
 //            delay(500)
 
+                allMarkers.forEach { marker ->
+                    marker.remove()
+                }
+                allMarkers.clear()
 
 
-            busList.forEach { bus ->
 
-                val array = bus.coordinatList[i].asJsonArray
+                busList.forEach { bus ->
 
-                val longitude = array[0].asDouble / 1000000
-                val latitude = array[1].asDouble / 1000000
 
-                val markerOptions = MarkerOptions()
+                    val array = bus.coordinatList[i].asJsonArray
 
-                markerOptions.position(LatLng(latitude, longitude))
-                    .title(bus.title)
-                    .icon(getMarkerIcon(bus, zoomLevel))
-                    .anchor(0.5F, 0.5F)
+                    val longitude = array[0].asDouble / 1000000
+                    val latitude = array[1].asDouble / 1000000
 
-                val newMarker: Marker = mMap.addMarker(markerOptions)
+                    val markerOptions = MarkerOptions()
 
-                newMarker.tag = bus.id
-                allMarkers.add(newMarker)
+                    markerOptions.position(LatLng(latitude, longitude))
+                        .title(bus.title)
+                        .icon(getMarkerIcon(bus, zoomLevel))
+                        .anchor(0.5F, 0.5F)
+
+                    val newMarker: Marker = mMap.addMarker(markerOptions)
+
+                    newMarker.tag = bus.id
+                    allMarkers.add(newMarker)
+                }
+
+                delay(updateRateInMillis)
+
             }
-
-            delay(updateRateInMillis)
-        }
         } else {
-        bus_info.text = "Ingen busser kører på nuværende tidspunkt."
-        bus_info.visibility = View.VISIBLE
-        currentBusId = ""
-    }
+            bus_info.text = "Ingen busser kører på nuværende tidspunkt."
+            bus_info.visibility = View.VISIBLE
+            currentBusId = ""
+        }
         if (currentBusId.isNotEmpty()) {
             bus_info.text = busInfoGenerator(currentBusId)
         }
         viewModel.fetchBusLocations()
     }
-
 
 
     private fun routeCoordinates(coordinateList: List<LatLng>) {
@@ -198,14 +199,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
 
-        mMap.setOnMarkerClickListener {marker ->
+        mMap.setOnMarkerClickListener { marker ->
 
             bus_info.visibility = View.VISIBLE
             currentBusId = marker.tag.toString()
 
             bus_info.text = busInfoGenerator(currentBusId)
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.position, zoomLevel))
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.position, zoomLevel))
+
+            cameraMove(marker.position)
+
+
             busColor = getColor(marker.title)
             viewModel.fetchBusRoute(marker.tag.toString())
             true
@@ -223,7 +226,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             busList = it
 
             mMap.setOnMapLoadedCallback {
-            plotMarkerJob = uiScope.launch(Main) {
+                plotMarkerJob = uiScope.launch(Main) {
                     plotBusMarkers(it, mMap.cameraPosition.zoom)
                 }
             }
@@ -236,6 +239,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
         var zoomCheck = mMap.cameraPosition.zoom
+        mMap.setOnCameraMoveCanceledListener {
+
+        }
+
         mMap.setOnCameraMoveListener {
             plotMarkerJob?.cancel()
             if (zoomCheck != mMap.cameraPosition.zoom) {
@@ -265,6 +272,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun cameraMove(position: LatLng) {
+        if (zoomLevel < 10.5) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10.5F))
+        } else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, zoomLevel))
+        }
+    }
+
     private fun busInfoGenerator(tag: String): String {
         val builder = StringBuilder()
         var result = ""
@@ -274,17 +289,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     builder.append("Bus ").append(bus.title).append(" mod ").append(bus.destination)
                         .append("\nNæste stop: ").append(bus.nextStop)
                         .append(
-                            if (bus.delayInMins == "0") {
+                            if (bus.delayInMins == "0" || bus.delayInMins.isEmpty()) {
                                 "\nKører til tiden"
                             } else {
                                 "\nForsinkelse: "
                             }
                         ).append(
-                            if (bus.delayInMins == "0") {
+                            if (bus.delayInMins == "0" || bus.delayInMins.isEmpty()) {
                                 ""
                             } else {
                                 bus.delayInMins
                             }
+                        ).append(
+                            if (bus.delayInMins == "0" || bus.delayInMins.isEmpty()) {
+                                ""
+                            } else if (bus.delayInMins == "1") {
+                                " Minut"
+                            } else {
+                                " Minutter"
+                            }
+
                         )
                     result = builder.toString()
                 }
@@ -311,7 +335,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    class CustomMarkerView(context: Context, bus: Bus, zoomLevel: Float, getColor: (id: String) -> Int) :
+    class CustomMarkerView(
+        context: Context,
+        bus: Bus,
+        zoomLevel: Float,
+        getColor: (id: String) -> Int
+    ) :
         ConstraintLayout(context) {
 
         init {
@@ -366,7 +395,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 }
 
-private var zoomLevel = 0F
+private var zoomLevel = 10.5F
 private var currentBusId = ""
 private var polylineExist = false
 private var busColor: Int = 1
