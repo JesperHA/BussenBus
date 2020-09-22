@@ -1,4 +1,4 @@
-package com.holmapps.bussenbus
+package com.svanekeapps.hvorerbat
 
 import org.junit.Test
 

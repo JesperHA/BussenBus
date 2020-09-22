@@ -1,8 +1,6 @@
-package com.holmapps.bussenbus.api
+package com.svanekeapps.hvorerbat.api
 
 import retrofit2.Response
-import timber.log.Timber
-import java.util.regex.Pattern
 
 /**
  * Common class used by API responses.

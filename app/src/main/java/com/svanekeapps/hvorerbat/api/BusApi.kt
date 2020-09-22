@@ -1,4 +1,4 @@
-package com.holmapps.bussenbus.api
+package com.svanekeapps.hvorerbat.api
 
 import retrofit2.Response
 import retrofit2.http.GET

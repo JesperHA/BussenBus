@@ -4,12 +4,12 @@
 
     To get one, follow this link, follow the directions and press "Create" at the end:
 
-    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=9A:17:81:EB:A3:DA:6E:A2:3B:7D:15:7A:95:50:4D:1F:A7:E7:EC:CC%3Bcom.holmapps.bussenbus
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=0F:6E:01:12:B3:F6:38:3D:D8:C2:4D:2D:47:ED:D4:3C:DB:6A:B8:07%3Bcom.svanekeapps.hvorerbat
 
     You can also add your credentials to an existing key, using these values:
 
     Package name:
-    com.holmapps.bussenbus
+    com.svanekeapps.hvorerbat
 
     SHA-1 certificate fingerprint:
     0F:6E:01:12:B3:F6:38:3D:D8:C2:4D:2D:47:ED:D4:3C:DB:6A:B8:07
@@ -19,8 +19,8 @@
 
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
-    JESPER: AIzaSyA-L7CzTWZ4Ams-5Kwip6_LR19-pjhQrvM
+    JESPER: AIzaSyCAXZHBtVnQnCvsG91toy_FApsDpNSiLPU
     ULRIK: AIzaSyBNJ51Mhop2qT07wLn34CUZWETY_Qic66k
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyA-L7CzTWZ4Ams-5Kwip6_LR19-pjhQrvM</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBE3foS6xEwzqunWwDxDTjv3_k5ErlIvRA</string>
 </resources>

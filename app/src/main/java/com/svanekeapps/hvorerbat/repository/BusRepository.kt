@@ -1,8 +1,8 @@
-package com.holmapps.bussenbus.repository
+package com.svanekeapps.hvorerbat.repository
 
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
-import com.holmapps.bussenbus.api.*
+import com.svanekeapps.hvorerbat.api.*
 import okio.IOException
 import timber.log.Timber
 import java.text.SimpleDateFormat

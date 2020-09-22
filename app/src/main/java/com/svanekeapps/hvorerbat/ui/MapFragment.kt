@@ -1,4 +1,4 @@
-package com.holmapps.bussenbus.ui
+package com.svanekeapps.hvorerbat.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -15,8 +15,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
-import com.holmapps.bussenbus.api.Bus
-import com.holmapps.bussenbus.databinding.MapFragmentBinding
+import com.svanekeapps.hvorerbat.api.Bus
+import com.svanekeapps.hvorerbat.databinding.MapFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.map_fragment.*
 import kotlinx.coroutines.CoroutineScope

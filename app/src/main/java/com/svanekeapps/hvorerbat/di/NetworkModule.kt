@@ -1,10 +1,10 @@
-package com.holmapps.bussenbus.di
+package com.svanekeapps.hvorerbat.di
 
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.holmapps.bussenbus.BuildConfig
-import com.holmapps.bussenbus.api.*
+import com.svanekeapps.hvorerbat.BuildConfig
+import com.svanekeapps.hvorerbat.api.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

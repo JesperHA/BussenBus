@@ -1,4 +1,4 @@
-package com.holmapps.bussenbus.di
+package com.svanekeapps.hvorerbat.di
 
 import dagger.Module
 import dagger.Provides

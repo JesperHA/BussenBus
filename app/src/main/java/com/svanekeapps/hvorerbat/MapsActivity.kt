@@ -1,9 +1,9 @@
-package com.holmapps.bussenbus
+package com.svanekeapps.hvorerbat
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.GoogleMap
-import com.holmapps.bussenbus.ui.MapFragment
+import com.svanekeapps.hvorerbat.ui.MapFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

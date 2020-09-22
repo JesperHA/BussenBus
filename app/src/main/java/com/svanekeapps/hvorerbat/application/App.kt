@@ -1,7 +1,7 @@
-package com.holmapps.bussenbus.application
+package com.svanekeapps.hvorerbat.application
 
 import android.app.Application
-import com.holmapps.bussenbus.BuildConfig
+import com.svanekeapps.hvorerbat.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 

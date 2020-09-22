@@ -1,4 +1,4 @@
-package com.holmapps.bussenbus.ui
+package com.svanekeapps.hvorerbat.ui
 
 import android.content.Context
 import android.text.TextUtils
@@ -7,8 +7,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.holmapps.bussenbus.R
-import com.holmapps.bussenbus.api.Bus
+import com.svanekeapps.hvorerbat.R
+import com.svanekeapps.hvorerbat.api.Bus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

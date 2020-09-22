@@ -1,10 +1,10 @@
-package com.holmapps.bussenbus.api
+package com.svanekeapps.hvorerbat.api
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
-import com.holmapps.bussenbus.R
+import com.svanekeapps.hvorerbat.R
 import timber.log.Timber
 import java.lang.reflect.Type
 

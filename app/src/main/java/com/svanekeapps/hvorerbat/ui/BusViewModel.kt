@@ -1,4 +1,4 @@
-package com.holmapps.bussenbus.ui
+package com.svanekeapps.hvorerbat.ui
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -10,10 +10,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.holmapps.bussenbus.R
-import com.holmapps.bussenbus.api.Bus
-import com.holmapps.bussenbus.repository.BusRepository
-import com.holmapps.bussenbus.repository.RouteObject
+import com.svanekeapps.hvorerbat.R
+import com.svanekeapps.hvorerbat.api.Bus
+import com.svanekeapps.hvorerbat.repository.BusRepository
+import com.svanekeapps.hvorerbat.repository.RouteObject
 import dagger.hilt.android.scopes.FragmentScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

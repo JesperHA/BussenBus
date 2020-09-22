@@ -1,4 +1,4 @@
-package com.holmapps.bussenbus.api
+package com.svanekeapps.hvorerbat.api
 
 import com.google.android.gms.maps.model.LatLng
 
