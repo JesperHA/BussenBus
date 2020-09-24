@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.RelativeLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -16,7 +15,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
-import com.svanekeapps.hvorerbat.R
 import com.svanekeapps.hvorerbat.api.Bus
 import com.svanekeapps.hvorerbat.databinding.MapFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +24,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -40,8 +39,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     lateinit var busList: List<Bus>
     private val updateRateInMillis: Long = 1000
     private val allMarkers = mutableListOf<Marker>()
-    var isOpen = false
-    private val markerVisibilityMap = mutableMapOf<String, Boolean>()
+    private var markerVisibilityMap = mutableMapOf<String, Boolean>()
 
 
     companion object {
@@ -66,50 +64,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val binding = MapFragmentBinding.bind(view)
 
-        val fabOpen = AnimationUtils.loadAnimation(requireContext(), R.anim.fab_open)
-        val fabClose = AnimationUtils.loadAnimation(requireContext(), R.anim.fab_close)
+        val clicklistenerHelper = ClicklistenerHelperClass(binding, requireContext(), allMarkers)
 
+        binding.fabMenu.setOnClickListener {clicklistenerHelper.fabMenuClickListener()}
+        binding.fab7.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab7ClickListener() }
+        binding.fab6.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab6ClickListener() }
 
-
-
-        binding.fabMenu.setOnClickListener {
-            if(isOpen){
-                binding.fab1.startAnimation(fabClose)
-                binding.fab2.startAnimation(fabClose)
-                binding.fab3.startAnimation(fabClose)
-                binding.fab4.startAnimation(fabClose)
-                binding.fab5.startAnimation(fabClose)
-                binding.fab6.startAnimation(fabClose)
-                binding.fab7.startAnimation(fabClose)
-                binding.fab8.startAnimation(fabClose)
-                isOpen = false
-            } else {
-                binding.fab1.startAnimation(fabOpen)
-                binding.fab2.startAnimation(fabOpen)
-                binding.fab3.startAnimation(fabOpen)
-                binding.fab4.startAnimation(fabOpen)
-                binding.fab5.startAnimation(fabOpen)
-                binding.fab6.startAnimation(fabOpen)
-                binding.fab7.startAnimation(fabOpen)
-                binding.fab8.startAnimation(fabOpen)
-
-                isOpen = true
-
-            }
-        }
-
-        // Make map with bus.title as key, and marker.visible as true/false and make it toggle
-        // when you click, thereafter check it in the plotmarkers function
-        binding.fab7.setOnClickListener {
-            allMarkers.forEach {marker ->
-                if(marker.title != "1" && marker.title != "4"){
-                    marker.isVisible = false
-                    markerVisibilityMap[marker.title] = false
-
-
-                }
-            }
-        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -255,10 +215,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val longitude = array[0].asDouble / 1000000
                     val latitude = array[1].asDouble / 1000000
                     val markerOptions = MarkerOptions()
+                    Timber.i("markerVisibilityMap: " + markerVisibilityMap.toString())
+                    var visibility = true
+                    if (markerVisibilityMap.containsValue(true)){
 
-                    var visibility = markerVisibilityMap[bus.id]
-                    if(visibility == null){
-                        visibility = true
+                        val markerVisibility = markerVisibilityMap[bus.title]
+                        if (markerVisibility == null) {
+                            visibility = false
+                        }
                     }
                     markerOptions.position(LatLng(latitude, longitude))
                         .title(bus.title)
@@ -269,9 +233,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                     val newMarker: Marker = mMap.addMarker(markerOptions)
 
+//                    Timber.i(bus.title + " visibility: " + newMarker.isVisible.toString())
+
                     newMarker.tag = bus.id
                     allMarkers.add(newMarker)
                 }
+
                 delay(updateRateInMillis)
             }
         } else {
@@ -286,8 +253,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.fetchBusLocations()
     }
-
-
 
 
 }
