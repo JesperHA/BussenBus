@@ -82,8 +82,7 @@ class ClicklistenerHelperClass(
     fun fab7ClickListener(): MutableMap<String, Boolean> {
 
         if (fab7IsOpen) {
-
-            binding.fab7.setColorFilter(R.color.greyout)
+            binding.fab7.setImageResource(R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "1" || marker.title == "4") {
                     markerVisibilityMap[marker.title] = true
@@ -95,7 +94,7 @@ class ClicklistenerHelperClass(
             }
             fab7IsOpen = false
         } else {
-            binding.fab7.setColorFilter(R.color.Bus1and4)
+            binding.fab7.setImageResource(R.drawable.ic_bus_1_4)
             allMarkers.forEach { marker ->
                 if (marker.title == "1" || marker.title == "4") {
                     markerVisibilityMap[marker.title] = false
@@ -115,7 +114,7 @@ class ClicklistenerHelperClass(
     fun fab6ClickListener(): MutableMap<String, Boolean> {
         if (fab6IsOpen) {
 
-
+            binding.fab6.setImageResource(R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "2") {
                     markerVisibilityMap[marker.title] = true
@@ -128,7 +127,7 @@ class ClicklistenerHelperClass(
             fab6IsOpen = false
         } else {
 
-
+            binding.fab6.setImageResource(R.drawable.ic_bus_2)
             allMarkers.forEach { marker ->
                 if (marker.title == "2") {
                     markerVisibilityMap[marker.title] = false
@@ -143,6 +142,7 @@ class ClicklistenerHelperClass(
 
     fun fab1ClickListener(): MutableMap<String, Boolean> {
         if (fab1IsOpen) {
+            binding.fab1.setImageResource(R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "21" || marker.title == "23") {
                     markerVisibilityMap[marker.title] = true
@@ -154,6 +154,7 @@ class ClicklistenerHelperClass(
             }
             fab1IsOpen = false
         } else {
+            binding.fab1.setImageResource(R.drawable.ic_bus_by)
             allMarkers.forEach { marker ->
                 if (marker.title == "21" || marker.title == "23") {
                     markerVisibilityMap[marker.title] = false
@@ -168,6 +169,7 @@ class ClicklistenerHelperClass(
 
     fun fab2ClickListener(): MutableMap<String, Boolean> {
         if (fab2IsOpen) {
+            binding.fab2.setImageResource(R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "10") {
                     markerVisibilityMap[marker.title] = true
@@ -179,6 +181,7 @@ class ClicklistenerHelperClass(
             }
             fab2IsOpen = false
         } else {
+            binding.fab2.setImageResource(R.drawable.ic_bus_10)
             allMarkers.forEach { marker ->
                 if (marker.title == "10") {
                     markerVisibilityMap[marker.title] = false
@@ -193,6 +196,7 @@ class ClicklistenerHelperClass(
 
     fun fab3ClickListener(): MutableMap<String, Boolean> {
         if (fab3IsOpen) {
+            binding.fab3.setImageResource(R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "9") {
                     markerVisibilityMap[marker.title] = true
@@ -204,6 +208,7 @@ class ClicklistenerHelperClass(
             }
             fab3IsOpen = false
         } else {
+            binding.fab3.setImageResource(R.drawable.ic_bus_9)
             allMarkers.forEach { marker ->
                 if (marker.title == "9") {
                     markerVisibilityMap[marker.title] = false
@@ -218,6 +223,7 @@ class ClicklistenerHelperClass(
 
     fun fab4ClickListener(): MutableMap<String, Boolean> {
         if (fab4IsOpen) {
+            binding.fab4.setImageResource(R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "6") {
                     markerVisibilityMap[marker.title] = true
@@ -229,6 +235,7 @@ class ClicklistenerHelperClass(
             }
             fab4IsOpen = false
         } else {
+            binding.fab4.setImageResource(R.drawable.ic_bus_6)
             allMarkers.forEach { marker ->
                 if (marker.title == "6") {
                     markerVisibilityMap[marker.title] = false
@@ -243,6 +250,7 @@ class ClicklistenerHelperClass(
 
     fun fab5ClickListener(): MutableMap<String, Boolean> {
         if (fab5IsOpen) {
+            binding.fab5.setImageResource(R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "3" || marker.title == "5") {
                     markerVisibilityMap[marker.title] = true
@@ -254,6 +262,7 @@ class ClicklistenerHelperClass(
             }
             fab5IsOpen = false
         } else {
+            binding.fab5.setImageResource(R.drawable.ic_bus_3_5)
             allMarkers.forEach { marker ->
                 if (marker.title == "3" || marker.title == "5") {
                     markerVisibilityMap[marker.title] = false
@@ -268,6 +277,7 @@ class ClicklistenerHelperClass(
 
     fun fab8ClickListener(): MutableMap<String, Boolean> {
         if (fab8IsOpen) {
+            binding.fab8.setImageResource(R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "7" || marker.title == "8") {
                     markerVisibilityMap[marker.title] = true
@@ -279,6 +289,7 @@ class ClicklistenerHelperClass(
             }
             fab8IsOpen = false
         } else {
+            binding.fab8.setImageResource(R.drawable.ic_bus_7_8)
             allMarkers.forEach { marker ->
                 if (marker.title == "7" || marker.title == "8") {
                     markerVisibilityMap[marker.title] = false
