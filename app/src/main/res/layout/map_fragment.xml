@@ -49,7 +49,7 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_1"
+        android:id="@+id/fab_21and23"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -59,7 +59,7 @@
         map:fabSize="mini"
         map:layout_constraintBottom_toBottomOf="@+id/fab_menu"
         map:layout_constraintEnd_toStartOf="@+id/fab_menu"
-        map:layout_constraintTop_toBottomOf="@id/fab_4"
+        map:layout_constraintTop_toBottomOf="@id/fab_6"
         map:maxImageSize="32dp"
         map:shapeAppearanceOverlay="@style/fab_square"
         android:visibility="invisible"
@@ -68,7 +68,7 @@
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_2"
+        android:id="@+id/fab_10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
@@ -76,9 +76,9 @@
         android:src="@drawable/ic_bus_10"
         map:backgroundTint="@color/Bus10"
         map:fabSize="mini"
-        map:layout_constraintBottom_toBottomOf="@+id/fab_1"
-        map:layout_constraintEnd_toStartOf="@+id/fab_1"
-        map:layout_constraintTop_toTopOf="@+id/fab_1"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_21and23"
+        map:layout_constraintEnd_toStartOf="@+id/fab_21and23"
+        map:layout_constraintTop_toTopOf="@+id/fab_21and23"
 
         map:maxImageSize="32dp"
         map:shapeAppearanceOverlay="@style/fab_square"
@@ -86,7 +86,7 @@
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_3"
+        android:id="@+id/fab_9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
@@ -94,16 +94,16 @@
         android:src="@drawable/ic_bus_9"
         map:backgroundTint="@color/Bus9"
         map:fabSize="mini"
-        map:layout_constraintBottom_toBottomOf="@+id/fab_2"
-        map:layout_constraintEnd_toStartOf="@+id/fab_2"
-        map:layout_constraintTop_toTopOf="@+id/fab_2"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_10"
+        map:layout_constraintEnd_toStartOf="@+id/fab_10"
+        map:layout_constraintTop_toTopOf="@+id/fab_10"
         map:maxImageSize="32dp"
         map:shapeAppearanceOverlay="@style/fab_square"
         android:visibility="invisible"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_4"
+        android:id="@+id/fab_6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -112,7 +112,7 @@
         android:src="@drawable/ic_bus_6"
         map:backgroundTint="@color/Bus6"
         map:fabSize="mini"
-        map:layout_constraintBottom_toTopOf="@+id/fab_1"
+        map:layout_constraintBottom_toTopOf="@+id/fab_21and23"
         map:layout_constraintEnd_toStartOf="@+id/fab_menu"
         map:layout_constraintTop_toTopOf="@+id/fab_menu"
         map:maxImageSize="32dp"
@@ -121,15 +121,15 @@
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_5"
+        android:id="@+id/fab_3and5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
         android:clickable="true"
         map:backgroundTint="@color/Bus3and5"
         map:fabSize="mini"
-        map:layout_constraintBottom_toBottomOf="@+id/fab_4"
-        map:layout_constraintEnd_toStartOf="@id/fab_4"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_6"
+        map:layout_constraintEnd_toStartOf="@id/fab_6"
         map:shapeAppearanceOverlay="@style/fab_square"
         map:maxImageSize="32dp"
         android:src="@drawable/ic_bus_3_5"
@@ -137,15 +137,15 @@
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_6"
+        android:id="@+id/fab_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
         android:clickable="true"
         map:backgroundTint="@color/Bus2"
         map:fabSize="mini"
-        map:layout_constraintBottom_toBottomOf="@+id/fab_5"
-        map:layout_constraintEnd_toStartOf="@id/fab_5"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_3and5"
+        map:layout_constraintEnd_toStartOf="@id/fab_3and5"
         map:shapeAppearanceOverlay="@style/fab_square"
         android:src="@drawable/ic_bus_2"
         map:maxImageSize="32dp"
@@ -154,15 +154,15 @@
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_7"
+        android:id="@+id/fab_1and4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
         android:clickable="true"
         map:backgroundTint="@color/Bus1and4"
         map:fabSize="mini"
-        map:layout_constraintBottom_toBottomOf="@+id/fab_6"
-        map:layout_constraintEnd_toStartOf="@id/fab_6"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_2"
+        map:layout_constraintEnd_toStartOf="@id/fab_2"
         map:shapeAppearanceOverlay="@style/fab_square"
         map:maxImageSize="32dp"
         android:src="@drawable/ic_bus_1_4"
@@ -170,7 +170,7 @@
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_8"
+        android:id="@+id/fab_7and8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
@@ -178,9 +178,9 @@
         android:src="@drawable/ic_bus_7_8"
         map:backgroundTint="@color/Bus7and8"
         map:fabSize="mini"
-        map:layout_constraintBottom_toBottomOf="@+id/fab_3"
-        map:layout_constraintEnd_toStartOf="@id/fab_3"
-        map:layout_constraintTop_toTopOf="@+id/fab_3"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_9"
+        map:layout_constraintEnd_toStartOf="@id/fab_9"
+        map:layout_constraintTop_toTopOf="@+id/fab_9"
         map:maxImageSize="32dp"
         map:shapeAppearanceOverlay="@style/fab_square"
         android:visibility="invisible"

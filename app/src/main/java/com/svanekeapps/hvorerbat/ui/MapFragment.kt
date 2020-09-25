@@ -67,15 +67,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         clicklistenerHelper = ClicklistenerHelperClass(binding, requireContext(), allMarkers)
 
         binding.fabMenu.setOnClickListener {clicklistenerHelper.fabMenuClickListener()}
-        binding.fab7.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab7ClickListener() }
-        binding.fab6.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab6ClickListener() }
-        binding.fab1.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab1ClickListener() }
+        binding.fab1and4.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab1and4ClickListener() }
         binding.fab2.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab2ClickListener() }
-        binding.fab3.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab3ClickListener() }
-        binding.fab4.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab4ClickListener() }
-        binding.fab5.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab5ClickListener() }
-
-        binding.fab8.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab8ClickListener() }
+        binding.fab3and5.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab3and5ClickListener() }
+        binding.fab6.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab6ClickListener() }
+        binding.fab7and8.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab7and8ClickListener() }
+        binding.fab9.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab9ClickListener() }
+        binding.fab10.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab10ClickListener() }
+        binding.fab21and23.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab21and23ClickListener() }
 
 
     }
