@@ -4,15 +4,19 @@ import android.content.Context
 import android.view.animation.AnimationUtils
 import com.google.android.gms.maps.model.Marker
 import com.svanekeapps.hvorerbat.R
+import com.svanekeapps.hvorerbat.api.Bus
 import com.svanekeapps.hvorerbat.databinding.MapFragmentBinding
 
-class ClicklistenerHelperClass(bindingObject: MapFragmentBinding, context: Context, allMarkers: List<Marker>) {
+class ClicklistenerHelperClass(
+    bindingObject: MapFragmentBinding,
+    context: Context,
+    allMarkersObject: List<Marker>
+) {
 
-
-    private val markerVisibilityMap = mutableMapOf<String, Boolean>()
+    val context = context
+    val markerVisibilityMap = mutableMapOf<String, Boolean>()
     private val binding = bindingObject
-//    private val markerVisibilityMap = markerVisibilityMapObject
-    private val allMarkers = allMarkers
+    private var allMarkers = allMarkersObject
 
     private var isOpen = false
     private var fab1IsOpen = true
@@ -24,10 +28,18 @@ class ClicklistenerHelperClass(bindingObject: MapFragmentBinding, context: Conte
     private var fab7IsOpen = true
     private var fab8IsOpen = true
 
-
     val fabOpen = AnimationUtils.loadAnimation(context, R.anim.fab_open)
     val fabClose = AnimationUtils.loadAnimation(context, R.anim.fab_close)
 
+
+    fun loadVisibilityMap(busList: List<Bus>): MutableMap<String, Boolean> {
+        busList.forEach { bus ->
+            if (markerVisibilityMap[bus.title] == null || markerVisibilityMap[bus.title] == false) {
+                markerVisibilityMap[bus.title] = false
+            }
+        }
+        return markerVisibilityMap
+    }
 
     fun fabMenuClickListener() {
         if (isOpen) {
@@ -58,73 +70,224 @@ class ClicklistenerHelperClass(bindingObject: MapFragmentBinding, context: Conte
     // Make map with bus.title as key, and marker.visible as true/false and make it toggle
     // when you click, thereafter check it in the plotmarkers function
 
+    private fun markerResetCheck() {
+        if (!markerVisibilityMap.containsValue(true)) {
+            allMarkers.forEach { marker ->
+                marker.isVisible = true
+            }
+        }
+    }
+
+
     fun fab7ClickListener(): MutableMap<String, Boolean> {
+
         if (fab7IsOpen) {
-            allMarkers.forEach { marker ->
 
-                // whitelisting chosen markers in the markerVisibilityMap
+            binding.fab7.setColorFilter(R.color.greyout)
+            allMarkers.forEach { marker ->
                 if (marker.title == "1" || marker.title == "4") {
-                    marker.isVisible = true
                     markerVisibilityMap[marker.title] = true
-                }
-
-                // setting visibility to false on all other markers that is not on the whitelist
-                if(marker.title != "1" && marker.title != "4"){
-                    if (markerVisibilityMap[marker.title] == false || markerVisibilityMap[marker.title] == null){
-                        marker.isVisible = false
-                    }
-                }
-
-            }
-
-            fab7IsOpen = false
-//                Timber.i("MarkerVisibilityMap: " + markerVisibilityMap.toString())
-        } else {
-            allMarkers.forEach { marker ->
-                if (marker.title == "1" || marker.title == "4") {
-                    if (markerVisibilityMap["1"]!! || markerVisibilityMap["4"]!!){
-
-//                        marker.isVisible = true
-                        markerVisibilityMap[marker.title] = false
-
-                    }
-
-
-                }
-                if(!markerVisibilityMap.containsValue(true)){
                     marker.isVisible = true
                 }
+                if (markerVisibilityMap[marker.title] == false) {
+                    marker.isVisible = false
+                }
             }
+            fab7IsOpen = false
+        } else {
+            binding.fab7.setColorFilter(R.color.Bus1and4)
+            allMarkers.forEach { marker ->
+                if (marker.title == "1" || marker.title == "4") {
+                    markerVisibilityMap[marker.title] = false
+                    marker.isVisible = false
+                }
+
+            }
+            markerResetCheck()
+
             fab7IsOpen = true
         }
 
         return markerVisibilityMap
     }
 
+
     fun fab6ClickListener(): MutableMap<String, Boolean> {
         if (fab6IsOpen) {
+
+
             allMarkers.forEach { marker ->
                 if (marker.title == "2") {
-                    marker.isVisible = true
                     markerVisibilityMap[marker.title] = true
+                    marker.isVisible = true
+                }
+                if (markerVisibilityMap[marker.title] == false) {
+                    marker.isVisible = false
                 }
             }
-
             fab6IsOpen = false
-//                Timber.i("MarkerVisibilityMap: " + markerVisibilityMap.toString())
         } else {
+
+
             allMarkers.forEach { marker ->
                 if (marker.title == "2") {
-                    marker.isVisible = false
                     markerVisibilityMap[marker.title] = false
+                    marker.isVisible = false
                 }
-
             }
+            markerResetCheck()
             fab6IsOpen = true
         }
         return markerVisibilityMap
     }
 
+    fun fab1ClickListener(): MutableMap<String, Boolean> {
+        if (fab1IsOpen) {
+            allMarkers.forEach { marker ->
+                if (marker.title == "21" || marker.title == "23") {
+                    markerVisibilityMap[marker.title] = true
+                    marker.isVisible = true
+                }
+                if (markerVisibilityMap[marker.title] == false) {
+                    marker.isVisible = false
+                }
+            }
+            fab1IsOpen = false
+        } else {
+            allMarkers.forEach { marker ->
+                if (marker.title == "21" || marker.title == "23") {
+                    markerVisibilityMap[marker.title] = false
+                    marker.isVisible = false
+                }
+            }
+            markerResetCheck()
+            fab1IsOpen = true
+        }
+        return markerVisibilityMap
+    }
 
+    fun fab2ClickListener(): MutableMap<String, Boolean> {
+        if (fab2IsOpen) {
+            allMarkers.forEach { marker ->
+                if (marker.title == "10") {
+                    markerVisibilityMap[marker.title] = true
+                    marker.isVisible = true
+                }
+                if (markerVisibilityMap[marker.title] == false) {
+                    marker.isVisible = false
+                }
+            }
+            fab2IsOpen = false
+        } else {
+            allMarkers.forEach { marker ->
+                if (marker.title == "10") {
+                    markerVisibilityMap[marker.title] = false
+                    marker.isVisible = false
+                }
+            }
+            markerResetCheck()
+            fab2IsOpen = true
+        }
+        return markerVisibilityMap
+    }
 
+    fun fab3ClickListener(): MutableMap<String, Boolean> {
+        if (fab3IsOpen) {
+            allMarkers.forEach { marker ->
+                if (marker.title == "9") {
+                    markerVisibilityMap[marker.title] = true
+                    marker.isVisible = true
+                }
+                if (markerVisibilityMap[marker.title] == false) {
+                    marker.isVisible = false
+                }
+            }
+            fab3IsOpen = false
+        } else {
+            allMarkers.forEach { marker ->
+                if (marker.title == "9") {
+                    markerVisibilityMap[marker.title] = false
+                    marker.isVisible = false
+                }
+            }
+            markerResetCheck()
+            fab3IsOpen = true
+        }
+        return markerVisibilityMap
+    }
+
+    fun fab4ClickListener(): MutableMap<String, Boolean> {
+        if (fab4IsOpen) {
+            allMarkers.forEach { marker ->
+                if (marker.title == "6") {
+                    markerVisibilityMap[marker.title] = true
+                    marker.isVisible = true
+                }
+                if (markerVisibilityMap[marker.title] == false) {
+                    marker.isVisible = false
+                }
+            }
+            fab4IsOpen = false
+        } else {
+            allMarkers.forEach { marker ->
+                if (marker.title == "6") {
+                    markerVisibilityMap[marker.title] = false
+                    marker.isVisible = false
+                }
+            }
+            markerResetCheck()
+            fab4IsOpen = true
+        }
+        return markerVisibilityMap
+    }
+
+    fun fab5ClickListener(): MutableMap<String, Boolean> {
+        if (fab5IsOpen) {
+            allMarkers.forEach { marker ->
+                if (marker.title == "3" || marker.title == "5") {
+                    markerVisibilityMap[marker.title] = true
+                    marker.isVisible = true
+                }
+                if (markerVisibilityMap[marker.title] == false) {
+                    marker.isVisible = false
+                }
+            }
+            fab5IsOpen = false
+        } else {
+            allMarkers.forEach { marker ->
+                if (marker.title == "3" || marker.title == "5") {
+                    markerVisibilityMap[marker.title] = false
+                    marker.isVisible = false
+                }
+            }
+            markerResetCheck()
+            fab5IsOpen = true
+        }
+        return markerVisibilityMap
+    }
+
+    fun fab8ClickListener(): MutableMap<String, Boolean> {
+        if (fab8IsOpen) {
+            allMarkers.forEach { marker ->
+                if (marker.title == "7" || marker.title == "8") {
+                    markerVisibilityMap[marker.title] = true
+                    marker.isVisible = true
+                }
+                if (markerVisibilityMap[marker.title] == false) {
+                    marker.isVisible = false
+                }
+            }
+            fab8IsOpen = false
+        } else {
+            allMarkers.forEach { marker ->
+                if (marker.title == "7" || marker.title == "8") {
+                    markerVisibilityMap[marker.title] = false
+                    marker.isVisible = false
+                }
+            }
+            markerResetCheck()
+            fab8IsOpen = true
+        }
+        return markerVisibilityMap
+    }
 }

@@ -24,7 +24,6 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -40,6 +39,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val updateRateInMillis: Long = 1000
     private val allMarkers = mutableListOf<Marker>()
     private var markerVisibilityMap = mutableMapOf<String, Boolean>()
+    private lateinit var clicklistenerHelper: ClicklistenerHelperClass
 
 
     companion object {
@@ -64,11 +64,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val binding = MapFragmentBinding.bind(view)
 
-        val clicklistenerHelper = ClicklistenerHelperClass(binding, requireContext(), allMarkers)
+        clicklistenerHelper = ClicklistenerHelperClass(binding, requireContext(), allMarkers)
 
         binding.fabMenu.setOnClickListener {clicklistenerHelper.fabMenuClickListener()}
         binding.fab7.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab7ClickListener() }
         binding.fab6.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab6ClickListener() }
+        binding.fab1.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab1ClickListener() }
+        binding.fab2.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab2ClickListener() }
+        binding.fab3.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab3ClickListener() }
+        binding.fab4.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab4ClickListener() }
+        binding.fab5.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab5ClickListener() }
+
+        binding.fab8.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab8ClickListener() }
+
 
     }
 
@@ -126,6 +134,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         mMap.setOnMapClickListener {
             bus_info.visibility = View.INVISIBLE
+            if(polylineExist){
+                polyLine.remove()
+            }
         }
 
         mMap.setOnMarkerClickListener { marker ->
@@ -195,7 +206,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         polylineExist = true
     }
 
-    private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
+    private suspend fun plotBusMarkers(
+        busList: List<Bus>,
+        zoomLevel: Float
+    ) {
+
         if (busList.isEmpty()) {
             bus_info.visibility = View.INVISIBLE
             if (polylineExist) {
@@ -215,12 +230,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val longitude = array[0].asDouble / 1000000
                     val latitude = array[1].asDouble / 1000000
                     val markerOptions = MarkerOptions()
-                    Timber.i("markerVisibilityMap: " + markerVisibilityMap.toString())
+//                    Timber.i("markerVisibilityMap: " + markerVisibilityMap.toString())
                     var visibility = true
                     if (markerVisibilityMap.containsValue(true)){
 
                         val markerVisibility = markerVisibilityMap[bus.title]
-                        if (markerVisibility == null) {
+                        if (!markerVisibility!!) {
                             visibility = false
                         }
                     }
@@ -233,13 +248,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                     val newMarker: Marker = mMap.addMarker(markerOptions)
 
-//                    Timber.i(bus.title + " visibility: " + newMarker.isVisible.toString())
-
                     newMarker.tag = bus.id
                     allMarkers.add(newMarker)
-                }
 
+                }
+                markerVisibilityMap = clicklistenerHelper.loadVisibilityMap(busList)
                 delay(updateRateInMillis)
+
+
             }
         } else {
             bus_info.text = "Ingen busser kører på nuværende tidspunkt."
