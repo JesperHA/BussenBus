@@ -1,7 +1,9 @@
 package com.svanekeapps.hvorerbat.ui
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.view.animation.AnimationUtils
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.Marker
 import com.svanekeapps.hvorerbat.R
 import com.svanekeapps.hvorerbat.api.Bus
@@ -31,11 +33,61 @@ class ClicklistenerHelperClass(
     val fabOpen = AnimationUtils.loadAnimation(context, R.anim.fab_open)
     val fabClose = AnimationUtils.loadAnimation(context, R.anim.fab_close)
 
+    private val buttonMap = mapOf(
+        "1" to binding.fab1and4,
+        "2" to binding.fab2,
+        "3" to binding.fab3and5,
+        "4" to binding.fab1and4,
+        "5" to binding.fab3and5,
+        "6" to binding.fab6,
+        "7" to binding.fab7and8,
+        "8" to binding.fab7and8,
+        "9" to binding.fab9,
+        "10" to binding.fab10,
+        "21" to binding.fab21and23,
+        "23" to binding.fab21and23
+
+    )
+
+    private fun colorGenerator(color: Int): ColorStateList {
+        return ColorStateList.valueOf(ContextCompat.getColor(context, color))
+    }
+
+    private val colorMap = mapOf(
+        "1" to colorGenerator(R.color.Bus1and4),
+        "2" to colorGenerator(R.color.Bus2),
+        "3" to colorGenerator(R.color.Bus3and5),
+        "4" to colorGenerator(R.color.Bus1and4),
+        "5" to colorGenerator(R.color.Bus3and5),
+        "6" to colorGenerator(R.color.Bus6),
+        "7" to colorGenerator(R.color.Bus7and8),
+        "8" to colorGenerator(R.color.Bus7and8),
+        "9" to colorGenerator(R.color.Bus9),
+        "10" to colorGenerator(R.color.Bus10),
+        "21" to colorGenerator(R.color.standard),
+        "23" to colorGenerator(R.color.standard)
+    )
+
 
     fun loadVisibilityMap(busList: List<Bus>): MutableMap<String, Boolean> {
         busList.forEach { bus ->
             if (markerVisibilityMap[bus.title] == null || markerVisibilityMap[bus.title] == false) {
                 markerVisibilityMap[bus.title] = false
+            }
+
+        }
+
+        buttonMap.forEach { button ->
+            button.value.isClickable = false
+            button.value.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.greyout))
+        }
+
+        buttonMap.forEach { button ->
+            if (!busList.none { it.title == button.key }) {
+//            if(markerVisibilityMap.containsKey(button.key)){
+
+                button.value.backgroundTintList = colorMap[button.key]
+                button.value.isClickable = true
             }
         }
         return markerVisibilityMap
