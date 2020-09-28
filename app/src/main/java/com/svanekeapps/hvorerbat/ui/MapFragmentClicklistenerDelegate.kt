@@ -9,7 +9,7 @@ import com.svanekeapps.hvorerbat.R
 import com.svanekeapps.hvorerbat.api.Bus
 import com.svanekeapps.hvorerbat.databinding.MapFragmentBinding
 
-class ClicklistenerHelperClass(
+class MapFragmentClicklistenerDelegate(
     bindingObject: MapFragmentBinding,
     context: Context,
     allMarkersObject: List<Marker>

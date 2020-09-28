@@ -39,7 +39,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val updateRateInMillis: Long = 1000
     private val allMarkers = mutableListOf<Marker>()
     private var markerVisibilityMap = mutableMapOf<String, Boolean>()
-    private lateinit var clicklistenerHelper: ClicklistenerHelperClass
+    private lateinit var mapFragmentClicklistenerHelper: MapFragmentClicklistenerDelegate
 
 
     companion object {
@@ -64,17 +64,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val binding = MapFragmentBinding.bind(view)
 
-        clicklistenerHelper = ClicklistenerHelperClass(binding, requireContext(), allMarkers)
+        mapFragmentClicklistenerHelper = MapFragmentClicklistenerDelegate(binding, requireContext(), allMarkers)
 
-        binding.fabMenu.setOnClickListener {clicklistenerHelper.fabMenuClickListener()}
-        binding.fab1and4.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab1and4ClickListener() }
-        binding.fab2.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab2ClickListener() }
-        binding.fab3and5.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab3and5ClickListener() }
-        binding.fab6.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab6ClickListener() }
-        binding.fab7and8.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab7and8ClickListener() }
-        binding.fab9.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab9ClickListener() }
-        binding.fab10.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab10ClickListener() }
-        binding.fab21and23.setOnClickListener { markerVisibilityMap = clicklistenerHelper.fab21and23ClickListener() }
+        binding.fabMenu.setOnClickListener {mapFragmentClicklistenerHelper.fabMenuClickListener()}
+        binding.fab1and4.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab1and4ClickListener() }
+        binding.fab2.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab2ClickListener() }
+        binding.fab3and5.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab3and5ClickListener() }
+        binding.fab6.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab6ClickListener() }
+        binding.fab7and8.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab7and8ClickListener() }
+        binding.fab9.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab9ClickListener() }
+        binding.fab10.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab10ClickListener() }
+        binding.fab21and23.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab21and23ClickListener() }
 
 
     }
@@ -251,13 +251,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     allMarkers.add(newMarker)
 
                 }
-                markerVisibilityMap = clicklistenerHelper.loadVisibilityMap(busList)
+                markerVisibilityMap = mapFragmentClicklistenerHelper.loadVisibilityMap(busList)
                 delay(updateRateInMillis)
 
 
             }
         } else {
-            markerVisibilityMap = clicklistenerHelper.loadVisibilityMap(busList)
+            markerVisibilityMap = mapFragmentClicklistenerHelper.loadVisibilityMap(busList)
             bus_info.text = "Ingen busser kører på nuværende tidspunkt."
             bus_info.visibility = View.VISIBLE
             currentBusId = ""
