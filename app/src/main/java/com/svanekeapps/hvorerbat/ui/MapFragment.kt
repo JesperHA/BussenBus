@@ -257,6 +257,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             }
         } else {
+            markerVisibilityMap = clicklistenerHelper.loadVisibilityMap(busList)
             bus_info.text = "Ingen busser kører på nuværende tidspunkt."
             bus_info.visibility = View.VISIBLE
             currentBusId = ""

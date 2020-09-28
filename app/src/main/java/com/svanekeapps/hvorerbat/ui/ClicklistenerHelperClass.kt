@@ -74,7 +74,6 @@ class ClicklistenerHelperClass(
             if (markerVisibilityMap[bus.title] == null || markerVisibilityMap[bus.title] == false) {
                 markerVisibilityMap[bus.title] = false
             }
-
         }
 
         buttonMap.forEach { button ->
