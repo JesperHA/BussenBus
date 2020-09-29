@@ -15,6 +15,8 @@ class MapsActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
+
+
         lateinit var mapFragment: MapFragment
 
         mapFragment = MapFragment.newInstance()

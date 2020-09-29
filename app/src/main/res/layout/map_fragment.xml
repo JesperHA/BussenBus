@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    >
-<com.google.android.gms.maps.MapView
-    android:id="@+id/map_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-/>
+    android:layout_height="match_parent">
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/bus_info"
@@ -33,5 +31,161 @@
         map:layout_constraintTop_toTopOf="@+id/map_view"
 
         tools:text="Bus 2 mod Rønne havn \nNæste stop: Lindeplads \nForsinkelse: 8m" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="64dp"
+        android:layout_marginBottom="27dp"
+        android:clickable="true"
+        map:backgroundTint="#FFFFFF"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="@+id/map_view"
+        map:srcCompat="@drawable/ic_baseline_directions_bus_24"
+        map:maxImageSize="32dp"
+        tools:ignore="VectorDrawableCompat" />
+
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_21and23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:clickable="false"
+        android:src="@drawable/ic_bus_by"
+        map:backgroundTint="@color/greyout"
+        map:fabSize="mini"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_menu"
+        map:layout_constraintEnd_toStartOf="@+id/fab_menu"
+        map:layout_constraintTop_toBottomOf="@id/fab_6"
+        map:maxImageSize="32dp"
+        map:shapeAppearanceOverlay="@style/fab_square"
+        android:visibility="invisible"
+
+
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        android:src="@drawable/ic_bus_10"
+        map:backgroundTint="@color/greyout"
+        map:fabSize="mini"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_21and23"
+        map:layout_constraintEnd_toStartOf="@+id/fab_21and23"
+        map:layout_constraintTop_toTopOf="@+id/fab_21and23"
+
+        map:maxImageSize="32dp"
+        map:shapeAppearanceOverlay="@style/fab_square"
+        android:visibility="invisible"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        android:src="@drawable/ic_bus_9"
+        map:backgroundTint="@color/greyout"
+        map:fabSize="mini"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_10"
+        map:layout_constraintEnd_toStartOf="@+id/fab_10"
+        map:layout_constraintTop_toTopOf="@+id/fab_10"
+        map:maxImageSize="32dp"
+        map:shapeAppearanceOverlay="@style/fab_square"
+        android:visibility="invisible"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="false"
+        android:src="@drawable/ic_bus_6"
+        map:backgroundTint="@color/greyout"
+        map:fabSize="mini"
+        map:layout_constraintBottom_toTopOf="@+id/fab_21and23"
+        map:layout_constraintEnd_toStartOf="@+id/fab_menu"
+        map:layout_constraintTop_toTopOf="@+id/fab_menu"
+        map:maxImageSize="32dp"
+        map:shapeAppearanceOverlay="@style/fab_square"
+        android:visibility="invisible"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_3and5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        map:backgroundTint="@color/greyout"
+        map:fabSize="mini"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_6"
+        map:layout_constraintEnd_toStartOf="@id/fab_6"
+        map:shapeAppearanceOverlay="@style/fab_square"
+        map:maxImageSize="32dp"
+        android:src="@drawable/ic_bus_3_5"
+        android:visibility="invisible"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        map:backgroundTint="@color/greyout"
+        map:fabSize="mini"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_3and5"
+        map:layout_constraintEnd_toStartOf="@id/fab_3and5"
+        map:shapeAppearanceOverlay="@style/fab_square"
+        android:src="@drawable/ic_bus_2"
+        map:maxImageSize="32dp"
+        android:visibility="invisible"
+
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_1and4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        map:backgroundTint="@color/greyout"
+        map:fabSize="mini"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_2"
+        map:layout_constraintEnd_toStartOf="@id/fab_2"
+        map:shapeAppearanceOverlay="@style/fab_square"
+        map:maxImageSize="32dp"
+        android:src="@drawable/ic_bus_1_4"
+        android:visibility="invisible"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_7and8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        android:src="@drawable/ic_bus_7_8"
+        map:backgroundTint="@color/greyout"
+        map:fabSize="mini"
+        map:layout_constraintBottom_toBottomOf="@+id/fab_9"
+        map:layout_constraintEnd_toStartOf="@id/fab_9"
+        map:layout_constraintTop_toTopOf="@+id/fab_9"
+        map:maxImageSize="32dp"
+        map:shapeAppearanceOverlay="@style/fab_square"
+        android:visibility="invisible"
+        />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
