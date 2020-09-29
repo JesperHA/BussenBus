@@ -38,6 +38,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     lateinit var busList: List<Bus>
     private val updateRateInMillis: Long = 1000
     private val allMarkers = mutableListOf<Marker>()
+    private var markerVisibilityMap = mutableMapOf<String, Boolean>()
+    private lateinit var mapFragmentClicklistenerHelper: MapFragmentClicklistenerDelegate
+
 
     companion object {
         fun newInstance() = MapFragment()
@@ -58,6 +61,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val binding = MapFragmentBinding.bind(view)
+
+        mapFragmentClicklistenerHelper = MapFragmentClicklistenerDelegate(binding, requireContext(), allMarkers)
+
+        binding.fabMenu.setOnClickListener {mapFragmentClicklistenerHelper.fabMenuClickListener()}
+        binding.fab1and4.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab1and4ClickListener() }
+        binding.fab2.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab2ClickListener() }
+        binding.fab3and5.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab3and5ClickListener() }
+        binding.fab6.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab6ClickListener() }
+        binding.fab7and8.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab7and8ClickListener() }
+        binding.fab9.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab9ClickListener() }
+        binding.fab10.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab10ClickListener() }
+        binding.fab21and23.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab21and23ClickListener() }
+
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -114,6 +133,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         mMap.setOnMapClickListener {
             bus_info.visibility = View.INVISIBLE
+            if(this::polyLine.isInitialized){
+                polyLine.remove()
+            }
         }
 
         mMap.setOnMarkerClickListener { marker ->
@@ -142,7 +164,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 zoomLevel = zoomCheck
             }
         }
-
 
 
         //moves compass button
@@ -175,19 +196,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun plotRoute(coordinateList: List<LatLng>) {
 
-        if (polylineExist) {
-            polyLine.remove()
+
+        if (this::polyLine.isInitialized) {
+                polyLine.remove()
         }
         polyLine = mMap.addPolyline(
             PolylineOptions().addAll(coordinateList).color(busColor)
         )
-        polylineExist = true
     }
 
-    private suspend fun plotBusMarkers(busList: List<Bus>, zoomLevel: Float) {
+    private suspend fun plotBusMarkers(
+        busList: List<Bus>,
+        zoomLevel: Float
+    ) {
+
         if (busList.isEmpty()) {
             bus_info.visibility = View.INVISIBLE
-            if (polylineExist) {
+            if (this::polyLine.isInitialized) {
                 polyLine.remove()
             }
         }
@@ -204,38 +229,51 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val longitude = array[0].asDouble / 1000000
                     val latitude = array[1].asDouble / 1000000
                     val markerOptions = MarkerOptions()
+//                    Timber.i("markerVisibilityMap: " + markerVisibilityMap.toString())
+                    var visibility = true
+                    if (markerVisibilityMap.containsValue(true)){
 
+                        val markerVisibility = markerVisibilityMap[bus.title]
+                        if (!markerVisibility!!) {
+                            visibility = false
+                        }
+                    }
                     markerOptions.position(LatLng(latitude, longitude))
                         .title(bus.title)
                         .icon(viewModel.getMarkerIcon(requireContext(), bus, zoomLevel))
                         .anchor(0.5F, 0.5F)
+                        .visible(visibility)
+
 
                     val newMarker: Marker = mMap.addMarker(markerOptions)
 
                     newMarker.tag = bus.id
                     allMarkers.add(newMarker)
+
                 }
+                markerVisibilityMap = mapFragmentClicklistenerHelper.loadVisibilityMap(busList)
                 delay(updateRateInMillis)
+
+
             }
         } else {
+            markerVisibilityMap = mapFragmentClicklistenerHelper.loadVisibilityMap(busList)
             bus_info.text = "Ingen busser kører på nuværende tidspunkt."
             bus_info.visibility = View.VISIBLE
             currentBusId = ""
         }
 
         if (currentBusId.isNotEmpty()) {
-            bus_info.text = viewModel.busInfoGenerator(busList, currentBusId)
+            if (bus_info != null) {
+                    bus_info.text = viewModel.busInfoGenerator(busList, currentBusId)
+                }
         }
-
         viewModel.fetchBusLocations()
     }
-
-
 
 
 }
 
 private var zoomLevel = 10.5F
 private var currentBusId = ""
-private var polylineExist = false
 private var busColor: Int = 1
