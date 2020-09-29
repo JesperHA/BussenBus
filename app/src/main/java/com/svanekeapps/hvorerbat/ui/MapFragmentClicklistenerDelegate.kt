@@ -79,6 +79,7 @@ class MapFragmentClicklistenerDelegate(
         buttonMap.forEach { button ->
             button.value.isClickable = false
             button.value.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.greyout))
+            button.value.alpha = 0.5F
         }
 
         buttonMap.forEach { button ->
@@ -87,6 +88,7 @@ class MapFragmentClicklistenerDelegate(
 
                 button.value.backgroundTintList = colorMap[button.key]
                 button.value.isClickable = true
+                button.value.alpha = 1F
             }
         }
         return markerVisibilityMap

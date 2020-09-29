@@ -133,7 +133,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         mMap.setOnMapClickListener {
             bus_info.visibility = View.INVISIBLE
-            if(polylineExist){
+            if(this::polyLine.isInitialized){
                 polyLine.remove()
             }
         }
@@ -196,13 +196,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun plotRoute(coordinateList: List<LatLng>) {
 
-        if (polylineExist) {
-            polyLine.remove()
+
+        if (this::polyLine.isInitialized) {
+                polyLine.remove()
         }
         polyLine = mMap.addPolyline(
             PolylineOptions().addAll(coordinateList).color(busColor)
         )
-        polylineExist = true
     }
 
     private suspend fun plotBusMarkers(
@@ -212,7 +212,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         if (busList.isEmpty()) {
             bus_info.visibility = View.INVISIBLE
-            if (polylineExist) {
+            if (this::polyLine.isInitialized) {
                 polyLine.remove()
             }
         }
@@ -264,17 +264,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
         if (currentBusId.isNotEmpty()) {
-            bus_info.text = viewModel.busInfoGenerator(busList, currentBusId)
+            if (bus_info != null) {
+                    bus_info.text = viewModel.busInfoGenerator(busList, currentBusId)
+                }
         }
-
         viewModel.fetchBusLocations()
     }
 
 
 }
 
-
 private var zoomLevel = 10.5F
 private var currentBusId = ""
-private var polylineExist = false
 private var busColor: Int = 1
