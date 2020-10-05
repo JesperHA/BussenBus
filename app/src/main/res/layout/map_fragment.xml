@@ -42,8 +42,8 @@
         map:backgroundTint="#FFFFFF"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="@+id/map_view"
-        map:srcCompat="@drawable/ic_baseline_directions_bus_24"
         map:maxImageSize="32dp"
+        map:srcCompat="@drawable/ic_baseline_tune_24"
         tools:ignore="VectorDrawableCompat" />
 
 
