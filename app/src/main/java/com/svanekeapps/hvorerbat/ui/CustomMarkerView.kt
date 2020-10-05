@@ -38,19 +38,23 @@ class CustomMarkerView(
         val height = lp.height * zoomFactor
         val width = lp.width * zoomFactor
 
-        if (maxFactor < zoomFactor) {
-            lp.height = (lp.height * maxFactor).toInt()
-            lp.width = (lp.width * maxFactor).toInt()
-            title.textSize = (title.textSize * maxFactor)
-        } else if (minFactor > zoomFactor) {
-            lp.height = (lp.height * minFactor).toInt()
-            lp.width = (lp.width * minFactor).toInt()
-            title.textSize = (title.textSize * minFactor)
-        } else {
-            lp.height = height.toInt()
-            lp.width = width.toInt()
-            title.textSize = (title.textSize * zoomFactor).toFloat()
-        }
+//        if (maxFactor < zoomFactor) {
+//            lp.height = (lp.height * maxFactor).toInt()
+//            lp.width = (lp.width * maxFactor).toInt()
+//            title.textSize = (title.textSize * maxFactor)
+//        } else if (minFactor > zoomFactor) {
+//            lp.height = (lp.height * minFactor).toInt()
+//            lp.width = (lp.width * minFactor).toInt()
+//            title.textSize = (title.textSize * minFactor)
+//        } else {
+//            lp.height = height.toInt()
+//            lp.width = width.toInt()
+//            title.textSize = (title.textSize * zoomFactor).toFloat()
+//        }
+
+        lp.height = (lp.height * minFactor).toInt()
+        lp.width = (lp.width * minFactor).toInt()
+        title.textSize = (title.textSize * minFactor)
 
         image.layoutParams = lp
         image.invalidate()
