@@ -10,7 +10,6 @@ import com.google.android.gms.maps.model.Polyline
 import com.svanekeapps.hvorerbat.R
 import com.svanekeapps.hvorerbat.api.Bus
 import com.svanekeapps.hvorerbat.databinding.MapFragmentBinding
-import timber.log.Timber
 
 class MapFragmentClicklistenerDelegate(
     bindingObject: MapFragmentBinding,
@@ -73,6 +72,23 @@ class MapFragmentClicklistenerDelegate(
         "23" to colorGenerator(R.color.standard)
     )
 
+    private val resourceMap = mapOf(
+        "1" to R.drawable.ic_bus_1_4,
+        "2" to R.drawable.ic_bus_2,
+        "3" to R.drawable.ic_bus_3_5,
+        "4" to R.drawable.ic_bus_1_4,
+        "5" to R.drawable.ic_bus_3_5,
+        "6" to R.drawable.ic_bus_6,
+        "7" to R.drawable.ic_bus_7_8,
+        "8" to R.drawable.ic_bus_7_8,
+        "9" to R.drawable.ic_bus_9,
+        "10" to R.drawable.ic_bus_10,
+        "21" to R.drawable.ic_bus_by,
+        "23" to R.drawable.ic_bus_by
+    )
+
+
+
 
     fun loadVisibilityMap(busList: List<Bus>): MutableMap<String, Boolean> {
         busList.forEach { bus ->
@@ -86,15 +102,24 @@ class MapFragmentClicklistenerDelegate(
             button.value.backgroundTintList =
                 ColorStateList.valueOf(ContextCompat.getColor(context, R.color.greyout))
             button.value.alpha = 0.5F
+
+            // check if button is clicked, and make sure it can be unclicked in case a bus goes out of route
+            if(button.value.tag != null){
+                if(button.value.tag.toString() == R.drawable.ic_checked.toString()){
+                    button.value.isClickable = true
+
+                }
+            }
         }
 
         buttonMap.forEach { button ->
             if (!busList.none { it.title == button.key }) {
-//            if(markerVisibilityMap.containsKey(button.key)){
-
                 button.value.backgroundTintList = colorMap[button.key]
                 button.value.isClickable = true
                 button.value.alpha = 1F
+            }else{
+                markerVisibilityMap[button.key] = false
+//                resourceMap[button.key]?.let { button.value.setImageResource(it) }
             }
         }
         return markerVisibilityMap
@@ -137,7 +162,6 @@ class MapFragmentClicklistenerDelegate(
             polyLine?.isVisible = true
             if(busInfoTrigger){
                 binding.busInfo.visibility = View.VISIBLE
-                Timber.i("Kommer til a")
             }else{
                 binding.busInfo.visibility = View.INVISIBLE
             }
@@ -152,8 +176,9 @@ class MapFragmentClicklistenerDelegate(
 
             }
             polyLine?.isVisible = visibility
+
+            // making sure to hide and show busInfo correctly
             if(visibility && busInfoTrigger){
-                Timber.i("Kommer til b")
                 binding.busInfo.visibility = View.VISIBLE
             }else{
                 binding.busInfo.visibility = View.INVISIBLE
@@ -167,46 +192,29 @@ class MapFragmentClicklistenerDelegate(
         viewModel: BusViewModel,
         busInfoTrigger: Boolean
     ): MutableMap<String, Boolean> {
-
         if (fab1and4IsOpen) {
             binding.fab1and4.setImageResource(R.drawable.ic_checked)
+            binding.fab1and4.tag = R.drawable.ic_checked
             allMarkers.forEach { marker ->
                 if (marker.title == "1" || marker.title == "4") {
                     markerVisibilityMap[marker.title] = true
                     marker.isVisible = true
-
-
-
                 }
                 if (markerVisibilityMap[marker.title] == false) {
                     marker.isVisible = false
                 }
-
-                //if polyline color is the same as the selected filter, it will stay true.
-//                if (polyLine?.color == viewModel.getColor(context, "1")) {
-//                    polyLine?.isVisible = marker.isVisible
-//                }
-
             }
-
             fab1and4IsOpen = false
         } else {
             binding.fab1and4.setImageResource(R.drawable.ic_bus_1_4)
+            binding.fab1and4.tag = R.drawable.ic_bus_1_4
+            markerVisibilityMap["1"] = false
+            markerVisibilityMap["4"] = false
             allMarkers.forEach { marker ->
                 if (marker.title == "1" || marker.title == "4") {
-                    markerVisibilityMap[marker.title] = false
                     marker.isVisible = false
-//                    polyLine?.isVisible = marker.isVisible
                 }
-
-                // set polyline visibilty to false if filter is deselected again
-//                if(polyLine?.color == viewModel.getColor(context, "1")){
-
-//                }
-
             }
-
-
             fab1and4IsOpen = true
         }
         markerResetCheck(polyLine, viewModel, busInfoTrigger)
@@ -220,41 +228,26 @@ class MapFragmentClicklistenerDelegate(
         busInfoTrigger: Boolean
     ): MutableMap<String, Boolean> {
         if (fab2IsOpen) {
-
             binding.fab2.setImageResource(R.drawable.ic_checked)
+            binding.fab2.tag = (R.drawable.ic_checked)
             allMarkers.forEach { marker ->
                 if (marker.title == "2") {
                     markerVisibilityMap[marker.title] = true
                     marker.isVisible = true
-//                    polyLine?.isVisible = marker.isVisible
-//                    Timber.i("polyline color: " + busColor.toString())
                 }
                 if (markerVisibilityMap[marker.title] == false) {
                     marker.isVisible = false
                 }
-
-                //if polyline color is the same as the selected filter, it will stay true.
-//                if(polyLine?.color == viewModel.getColor(context, "2")){
-
-//                }
-
             }
             fab2IsOpen = false
         } else {
-
             binding.fab2.setImageResource(R.drawable.ic_bus_2)
+            binding.fab2.tag = R.drawable.ic_bus_2
+            markerVisibilityMap["2"] = false
             allMarkers.forEach { marker ->
                 if (marker.title == "2") {
-                    markerVisibilityMap[marker.title] = false
                     marker.isVisible = false
-//                    polyLine?.isVisible = marker.isVisible
                 }
-
-                // set polyline visibilty to false if filter is deselected again
-//                if(polyLine?.color == viewModel.getColor(context, "2")){
-
-//                }
-
             }
 
             fab2IsOpen = true
@@ -270,6 +263,7 @@ class MapFragmentClicklistenerDelegate(
     ): MutableMap<String, Boolean> {
         if (fab21and23IsOpen) {
             binding.fab21and23.setImageResource(R.drawable.ic_checked)
+            binding.fab21and23.tag = R.drawable.ic_checked
             allMarkers.forEach { marker ->
                 if (marker.title == "21" || marker.title == "23") {
                     markerVisibilityMap[marker.title] = true
@@ -282,13 +276,14 @@ class MapFragmentClicklistenerDelegate(
             fab21and23IsOpen = false
         } else {
             binding.fab21and23.setImageResource(R.drawable.ic_bus_by)
+            binding.fab21and23.tag = R.drawable.ic_bus_by
+            markerVisibilityMap["21"] = false
+            markerVisibilityMap["23"] = false
             allMarkers.forEach { marker ->
                 if (marker.title == "21" || marker.title == "23") {
-                    markerVisibilityMap[marker.title] = false
                     marker.isVisible = false
                 }
             }
-
             fab21and23IsOpen = true
         }
         markerResetCheck(polyLine, viewModel, busInfoTrigger)
@@ -302,6 +297,7 @@ class MapFragmentClicklistenerDelegate(
     ): MutableMap<String, Boolean> {
         if (fab10IsOpen) {
             binding.fab10.setImageResource(R.drawable.ic_checked)
+            binding.fab10.tag = R.drawable.ic_checked
             allMarkers.forEach { marker ->
                 if (marker.title == "10") {
                     markerVisibilityMap[marker.title] = true
@@ -314,13 +310,13 @@ class MapFragmentClicklistenerDelegate(
             fab10IsOpen = false
         } else {
             binding.fab10.setImageResource(R.drawable.ic_bus_10)
+            binding.fab10.tag = R.drawable.ic_bus_10
+            markerVisibilityMap["10"] = false
             allMarkers.forEach { marker ->
                 if (marker.title == "10") {
-                    markerVisibilityMap[marker.title] = false
                     marker.isVisible = false
                 }
             }
-
             fab10IsOpen = true
         }
         markerResetCheck(polyLine, viewModel, busInfoTrigger)
@@ -334,6 +330,7 @@ class MapFragmentClicklistenerDelegate(
     ): MutableMap<String, Boolean> {
         if (fab9IsOpen) {
             binding.fab9.setImageResource(R.drawable.ic_checked)
+            binding.fab9.tag = R.drawable.ic_checked
             allMarkers.forEach { marker ->
                 if (marker.title == "9") {
                     markerVisibilityMap[marker.title] = true
@@ -346,9 +343,10 @@ class MapFragmentClicklistenerDelegate(
             fab9IsOpen = false
         } else {
             binding.fab9.setImageResource(R.drawable.ic_bus_9)
+            binding.fab9.tag = R.drawable.ic_bus_9
+            markerVisibilityMap["9"] = false
             allMarkers.forEach { marker ->
                 if (marker.title == "9") {
-                    markerVisibilityMap[marker.title] = false
                     marker.isVisible = false
                 }
             }
@@ -366,6 +364,7 @@ class MapFragmentClicklistenerDelegate(
     ): MutableMap<String, Boolean> {
         if (fab6IsOpen) {
             binding.fab6.setImageResource(R.drawable.ic_checked)
+            binding.fab6.tag = R.drawable.ic_checked
             allMarkers.forEach { marker ->
                 if (marker.title == "6") {
                     markerVisibilityMap[marker.title] = true
@@ -378,9 +377,10 @@ class MapFragmentClicklistenerDelegate(
             fab6IsOpen = false
         } else {
             binding.fab6.setImageResource(R.drawable.ic_bus_6)
+            binding.fab6.tag = R.drawable.ic_bus_6
+            markerVisibilityMap["6"] = false
             allMarkers.forEach { marker ->
                 if (marker.title == "6") {
-                    markerVisibilityMap[marker.title] = false
                     marker.isVisible = false
                 }
             }
@@ -398,6 +398,7 @@ class MapFragmentClicklistenerDelegate(
     ): MutableMap<String, Boolean> {
         if (fab3and5IsOpen) {
             binding.fab3and5.setImageResource(R.drawable.ic_checked)
+            binding.fab3and5.tag = R.drawable.ic_checked
             allMarkers.forEach { marker ->
                 if (marker.title == "3" || marker.title == "5") {
                     markerVisibilityMap[marker.title] = true
@@ -410,16 +411,17 @@ class MapFragmentClicklistenerDelegate(
             fab3and5IsOpen = false
         } else {
             binding.fab3and5.setImageResource(R.drawable.ic_bus_3_5)
+            binding.fab3and5.tag = R.drawable.ic_bus_3_5
+            markerVisibilityMap["3"] = false
+            markerVisibilityMap["5"] = false
             allMarkers.forEach { marker ->
                 if (marker.title == "3" || marker.title == "5") {
-                    markerVisibilityMap[marker.title] = false
                     marker.isVisible = false
                 }
             }
 
             fab3and5IsOpen = true
         }
-        Timber.i("BusInfoTrigger: " + busInfoTrigger.toString())
         markerResetCheck(polyLine, viewModel, busInfoTrigger)
         return markerVisibilityMap
     }
@@ -431,6 +433,7 @@ class MapFragmentClicklistenerDelegate(
     ): MutableMap<String, Boolean> {
         if (fab7and8IsOpen) {
             binding.fab7and8.setImageResource(R.drawable.ic_checked)
+            binding.fab7and8.tag = R.drawable.ic_checked
             allMarkers.forEach { marker ->
                 if (marker.title == "7" || marker.title == "8") {
                     markerVisibilityMap[marker.title] = true
@@ -443,9 +446,11 @@ class MapFragmentClicklistenerDelegate(
             fab7and8IsOpen = false
         } else {
             binding.fab7and8.setImageResource(R.drawable.ic_bus_7_8)
+            binding.fab7and8.tag = R.drawable.ic_bus_7_8
+            markerVisibilityMap["7"] = false
+            markerVisibilityMap["8"] = false
             allMarkers.forEach { marker ->
                 if (marker.title == "7" || marker.title == "8") {
-                    markerVisibilityMap[marker.title] = false
                     marker.isVisible = false
                 }
             }
