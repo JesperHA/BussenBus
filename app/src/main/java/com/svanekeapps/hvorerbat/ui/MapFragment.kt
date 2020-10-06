@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -34,12 +35,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val REQUEST_LOCATION: Int = 1
     private lateinit var mMap: GoogleMap
     private val uiScope = CoroutineScope(Main)
-    private lateinit var polyLine: Polyline
+    private var polyLine: Polyline? = null
     lateinit var busList: List<Bus>
     private val updateRateInMillis: Long = 1000
     private val allMarkers = mutableListOf<Marker>()
     private var markerVisibilityMap = mutableMapOf<String, Boolean>()
     private lateinit var mapFragmentClicklistenerHelper: MapFragmentClicklistenerDelegate
+
 
 
     companion object {
@@ -66,15 +68,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         mapFragmentClicklistenerHelper = MapFragmentClicklistenerDelegate(binding, requireContext(), allMarkers)
 
-        binding.fabMenu.setOnClickListener {mapFragmentClicklistenerHelper.fabMenuClickListener()}
-        binding.fab1and4.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab1and4ClickListener() }
-        binding.fab2.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab2ClickListener() }
-        binding.fab3and5.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab3and5ClickListener() }
-        binding.fab6.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab6ClickListener() }
-        binding.fab7and8.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab7and8ClickListener() }
-        binding.fab9.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab9ClickListener() }
-        binding.fab10.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab10ClickListener() }
-        binding.fab21and23.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab21and23ClickListener() }
+        binding.fabMenu.setOnClickListener { mapFragmentClicklistenerHelper.fabMenuClickListener() }
+
+        binding.fab1and4.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab1and4ClickListener(polyLine, viewModel, busInfoTrigger) }
+        binding.fab2.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab2ClickListener(polyLine, viewModel, busInfoTrigger) }
+        binding.fab3and5.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab3and5ClickListener(polyLine, viewModel, busInfoTrigger) }
+        binding.fab6.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab6ClickListener(polyLine, viewModel, busInfoTrigger) }
+        binding.fab7and8.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab7and8ClickListener(polyLine, viewModel, busInfoTrigger) }
+        binding.fab9.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab9ClickListener(polyLine, viewModel, busInfoTrigger) }
+        binding.fab10.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab10ClickListener(polyLine, viewModel, busInfoTrigger) }
+        binding.fab21and23.setOnClickListener { markerVisibilityMap = mapFragmentClicklistenerHelper.fab21and23ClickListener(polyLine, viewModel, busInfoTrigger) }
 
 
     }
@@ -133,14 +136,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         mMap.setOnMapClickListener {
             bus_info.visibility = View.INVISIBLE
-            if(this::polyLine.isInitialized){
-                polyLine.remove()
+            busInfoTrigger = false
+            if(polyLine != null){
+
+                polyLine?.remove()
             }
         }
 
         mMap.setOnMarkerClickListener { marker ->
 
+
             bus_info.visibility = View.VISIBLE
+            busInfoTrigger = true
             currentBusId = marker.tag.toString()
 
             bus_info.text = viewModel.busInfoGenerator(busList, currentBusId)
@@ -149,6 +156,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             busColor = viewModel.getColor(requireContext(), marker.title)
             viewModel.fetchBusRoute(marker.tag.toString())
+            Timber.i("Marker title: " + marker.title)
             true
         }
 
@@ -197,8 +205,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun plotRoute(coordinateList: List<LatLng>) {
 
 
-        if (this::polyLine.isInitialized) {
-                polyLine.remove()
+        if (polyLine != null) {
+                polyLine?.remove()
         }
         polyLine = mMap.addPolyline(
             PolylineOptions().addAll(coordinateList).color(busColor)
@@ -212,8 +220,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         if (busList.isEmpty()) {
             bus_info.visibility = View.INVISIBLE
-            if (this::polyLine.isInitialized) {
-                polyLine.remove()
+            if (polyLine != null) {
+                polyLine?.remove()
             }
         }
 
@@ -234,7 +242,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     if (markerVisibilityMap.containsValue(true)){
 
                         val markerVisibility = markerVisibilityMap[bus.title]
-                        if (!markerVisibility!!) {
+                        if (markerVisibility == false || markerVisibility == null) {
                             visibility = false
                         }
                     }
@@ -243,6 +251,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         .icon(viewModel.getMarkerIcon(requireContext(), bus, zoomLevel))
                         .anchor(0.5F, 0.5F)
                         .visible(visibility)
+
+
 
 
                     val newMarker: Marker = mMap.addMarker(markerOptions)
@@ -274,6 +284,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 }
 
+private var busInfoTrigger = false
 private var zoomLevel = 10.5F
 private var currentBusId = ""
 private var busColor: Int = 1
